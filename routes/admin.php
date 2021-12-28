@@ -37,6 +37,10 @@ Route::prefix('admin')->middleware('theme:admin')->name('admin.')->group(functio
          Route::match(['get','post'],'/activating-deliveryMan/{id}',[DeliveryManController::class, 'StatusActive']);
 
 
+         //View Shop
+         Route::get('/view-shop/{id}',[ShopkeeperController::class,'viewShop']);
+
+
          //category
         //  Route::get('/add-category',[CategoryController::class,'AddCategory'])->name('add.category');
          Route::post('/add-category/{id}',[CategoryController::class,'storeCategory'])->name('store.category');

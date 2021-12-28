@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit57555cadd4b915f4e41b682220890e91
+class ComposerStaticInite49aee42a3fcecb5832185f367b51b33
 {
     public static $files = array (
         'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
@@ -534,6 +534,8 @@ class ComposerStaticInit57555cadd4b915f4e41b682220890e91
         'App\\Http\\Controllers\\Admin\\AuthController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/AuthController.php',
         'App\\Http\\Controllers\\Admin\\CategoryController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/CategoryController.php',
         'App\\Http\\Controllers\\Admin\\DeliveryManController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/DeliveryManController.php',
+        'App\\Http\\Controllers\\Admin\\ShopkeeperController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/ShopkeeperController.php',
+        'App\\Http\\Controllers\\Api\\ApiController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/ApiController.php',
         'App\\Http\\Controllers\\Auth\\AuthenticatedSessionController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/AuthenticatedSessionController.php',
         'App\\Http\\Controllers\\Auth\\ConfirmablePasswordController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/ConfirmablePasswordController.php',
         'App\\Http\\Controllers\\Auth\\EmailVerificationNotificationController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/EmailVerificationNotificationController.php',
@@ -544,6 +546,7 @@ class ComposerStaticInit57555cadd4b915f4e41b682220890e91
         'App\\Http\\Controllers\\Auth\\VerifyEmailController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/VerifyEmailController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\Delivery\\AuthController' => __DIR__ . '/../..' . '/app/Http/Controllers/Delivery/AuthController.php',
+        'App\\Http\\Controllers\\Shopkeeper\\AuthController' => __DIR__ . '/../..' . '/app/Http/Controllers/Shopkeeper/AuthController.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
         'App\\Http\\Middleware\\Authenticate' => __DIR__ . '/../..' . '/app/Http/Middleware/Authenticate.php',
         'App\\Http\\Middleware\\EncryptCookies' => __DIR__ . '/../..' . '/app/Http/Middleware/EncryptCookies.php',
@@ -557,6 +560,8 @@ class ComposerStaticInit57555cadd4b915f4e41b682220890e91
         'App\\Models\\Admin' => __DIR__ . '/../..' . '/app/Models/Admin.php',
         'App\\Models\\Category' => __DIR__ . '/../..' . '/app/Models/Category.php',
         'App\\Models\\DeliveryMan' => __DIR__ . '/../..' . '/app/Models/DeliveryMan.php',
+        'App\\Models\\Shop' => __DIR__ . '/../..' . '/app/Models/Shop.php',
+        'App\\Models\\Shopkeeper' => __DIR__ . '/../..' . '/app/Models/Shopkeeper.php',
         'App\\Models\\Subcategory' => __DIR__ . '/../..' . '/app/Models/Subcategory.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
         'App\\Providers\\AppServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AppServiceProvider.php',
@@ -5589,10 +5594,10 @@ class ComposerStaticInit57555cadd4b915f4e41b682220890e91
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit57555cadd4b915f4e41b682220890e91::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit57555cadd4b915f4e41b682220890e91::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit57555cadd4b915f4e41b682220890e91::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit57555cadd4b915f4e41b682220890e91::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInite49aee42a3fcecb5832185f367b51b33::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInite49aee42a3fcecb5832185f367b51b33::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInite49aee42a3fcecb5832185f367b51b33::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInite49aee42a3fcecb5832185f367b51b33::$classMap;
 
         }, null, ClassLoader::class);
     }
