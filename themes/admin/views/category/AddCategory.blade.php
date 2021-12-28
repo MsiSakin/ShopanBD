@@ -15,7 +15,7 @@
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{route('admin.home')}}">Home</a></li>
-                        <li class="breadcrumb-item active">Category Add</li>
+                        <li class="breadcrumb-item active">Category Edit</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -24,12 +24,12 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <form action="{{ route('admin.store.category') }}" method="post" enctype="multipart/form-data">
+            <form action="{{ url('/admin/add-category/'.$category['id']) }}" method="post" enctype="multipart/form-data">
                 @csrf
                 <div class="card card-default">
                     <div class="card-header">
-                        <h3 class="card-title">Category Add</h3>
-        
+                        <h3 class="card-title">Category Edit</h3>
+
                         <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="collapse">
                                 <i class="fas fa-minus"></i>
@@ -40,8 +40,8 @@
                         </div>
                     </div>
                     <!-- /.card-header -->
-        
-        
+
+
                     {{--custom validation--}}
                     <div class="col-lg-12">
                         <div class="col-lg-1"></div>
@@ -58,18 +58,28 @@
                         </div>
                         <div class="col-lg-1"></div>
                     </div>
-        
+
                     <div class="card-body">
-        
+
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="form-group">
                                     <label for="Category Name">Category Name</label><span class="text-danger">*</span>
-                                    <input type="text" name="category_name" class="form-control" placeholder="Enter Category Name..." required>
+                                    <input type="text" name="category_name" class="form-control" placeholder="Enter Category Name..." value="{{ $category['category_name'] }}" required>
                                 </div>
+
                                 <div class="form-group">
                                     <label for="Category Image">Category Image</label><span class="text-danger">*</span>
                                     <input type="file" name="category_image" class="form-control" placeholder="Enter Category Name..." required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Current Image</label><br>
+
+                                    @if(!empty($category['category_image']))
+                                            <img width="64" height="60" src="{{asset($category['category_image'])}}" alt="Category Image">
+                                    @else
+                                            <img width="64" height="50" src="{{asset('category/images/category_image/no-image.png')}}" alt="Category Image">
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -77,7 +87,7 @@
                     </div>
                     <!-- /.card-body -->
                     <div class="card-footer">
-                        <button type="submit" class="btn btn-md btn-success" style="float: right">ADD Category</button>
+                        <button type="submit" class="btn btn-md btn-success" style="float: right">ADD</button>
                     </div>
                 </div>
             </form>

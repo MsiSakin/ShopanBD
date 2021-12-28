@@ -12,4 +12,11 @@ class Category extends Model
     protected $fillable = [
         'category_name','category_image','status'
     ];
+
+    //category_image_path
+    protected $appends = ['image_path'];
+
+    public function getImagePathAttribute(){
+        return asset($this->category_image);
+    }
 }

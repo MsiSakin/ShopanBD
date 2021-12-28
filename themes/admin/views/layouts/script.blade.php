@@ -37,7 +37,6 @@
 <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap4.min.js"></script>
-
 <script>
     $(document).ready(function() {
         $('#example').DataTable();
@@ -71,10 +70,10 @@
 {{--  custome script  --}}
 {{-- <script>
    $(document).on("click",".active",function () {
-    
+
     var record = $(this).attr('record');
     var recordid = $(this).attr('recordid');
-    
+
     $.ajax({
                type:'post',
                url:'/admin/shopkeeper-status/'+record+"/"+recordid,
@@ -194,70 +193,56 @@ $(document).on("click",".activating",function () {
     </script>
 
 
+    <script>
+        $(document).on("click",".updateCategoryStatus",function () {
+            var status = $(this).children("i").attr('status');
+            var category_id = $(this).attr('category_id');
 
-{{-- View Shop modal --}}
-{{--  <script>
-    $(".shopDetails").click(function (e) {
-        var record = $(this).attr('vendor_id');
-        
             $.ajax({
-                type: "POST",
-                // url: "/admin/view-shop",
-                url:'/admin/view-shop/',
-                data: {record:record},
-                success: function (result) {
-                   
-                    // $('.modal-body').html(response); 
+                type:"post",
+                url:"/admin/category-status",
+                data:{status:status,category_id:category_id},
+                success:function(res){
+                    if(res['status'] == 0){
+                        $("#category-"+category_id).html("<i class='fas fa-toggle-off' aria-hidden='true' status='Inactive'></i>");
+                    }else if(res['status'] == 1){
 
-
-                    // $('#empModal').modal('show'); 
-                    $('#empModal').modal('show');
-                    // $("#modalTable").html("<tr><th>Action</th><th>UserId</th><th>UserName</th><th>Email</th><th>Phone</th></tr>");
-                    // var tr = "<tr><th>Action</th><th>UserId</th><th>UserName</th><th>Email</th><th>Phone</th></tr>"
-                    // $("#modalTable").append(tr);
-                    // for (var user of result) {
-                    //     tr = "<tr><td><button type=\"button\" onclick=\"myFunction('" + user.UserId + "')\" class=\"btn btnSelect\">Select</button></td><td>" + user.UserId + "</td><td>" +
-                    //         user.UserName + "</td><td>" + user.Email +
-                    //         "</td><td>" + user.Phone + "</td></tr>"
-
-                    //     $("#modalTable").append(tr);
-                    // }
-                    // $('#empModal').modal('show');
+                        $("#category-"+category_id).html("<i class='fas fa-toggle-on' aria-hidden='true' status='Active'></i>");
+                    }
                 },
-
-               
-                error: function () {
-                    alert("Content load failed.");
+                error:function(){
+                    alert("Error!");
                 }
+
             });
+
+        })
+  </script>
+
+  
+  <script>
+    $(document).on("click",".updateSubCategoryStatus",function () {
+        var status = $(this).children("i").attr('status');
+        var subcategory_id = $(this).attr('subcategory_id');
+
+        $.ajax({
+            type:"post",
+            url:"/admin/subcategory-status",
+            data:{status:status,subcategory_id:subcategory_id},
+            success:function(res){
+                if(res['status'] == 0){
+                    $("#subcategory-"+subcategory_id).html("<i class='fas fa-toggle-off' aria-hidden='true' status='Inactive'></i>");
+                }else if(res['status'] == 1){
+
+                    $("#subcategory-"+subcategory_id).html("<i class='fas fa-toggle-on' aria-hidden='true' status='Active'></i>");
+                }
+            },
+            error:function(){
+                alert("Error!");
+            }
+
         });
 
-       
-</script>  --}}
-
-
-
-{{--  <script>
-
-    // Activating Delivery Man
-    $(document).on("click",".shopDetails",function () {
-        var record = $(this).attr('vendor_id');
-        // var recordid = $(this).attr('recordid');
-        Swal.fire({
-            title: 'Are you sure?',
-            text:   "You want to Activate this Delivery Man!",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href="/admin/"+record+"/"+recordid;
-            }
-        })
     })
-    </script>  --}}
-
-
-    @stack('scripts')
+</script>
+@stack('scripts')
