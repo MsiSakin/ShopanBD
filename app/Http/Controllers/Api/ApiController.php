@@ -7,6 +7,7 @@ use App\Models\Admin;
 use App\Models\Category;
 use App\Models\Shop;
 use App\Models\Shopkeeper;
+use App\Models\Slider;
 use App\Models\Subcategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -61,6 +62,30 @@ class ApiController extends Controller
             ],204);
         }
     }
+
+
+    //slider api
+    public function Slider(){
+        $slider = Slider::where('status',1)->select('id','category_id','slider')->get()->toArray();
+        if (!empty($slider)){
+            return response()->json([
+                'data'=>$slider,
+            ],200);
+
+        }else{
+            return response()->json([
+                'status'=>false,
+            ],204);
+        }
+    }
+
+
+
+
+
+
+
+
 
 
 
