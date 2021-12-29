@@ -61,7 +61,7 @@
                                     <td style="text-align:center">
                                         <form method="post" action="{{ url('/admin/percentage-update/'.$row->id) }}">
                                             @csrf
-                                            <input type="text" name="percentage_value" value="{{$row->percentage}}">&nbsp;&nbsp;
+                                            <input type="text" name="percentage_value" value="{{$row->percentage}}" placeholder="%" >&nbsp;&nbsp;
                                             <button type="submit" class="btn btn-info btn-sm">
                                                 <i class="fas fa-edit"></i>
                                             </button>

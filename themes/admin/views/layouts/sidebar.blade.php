@@ -131,6 +131,7 @@
 
           </ul>
         </li>
+
         <li class="nav-item has-treeview @yield('deliveryMan')">
           <a href="#" class="nav-link @yield('deliveryMan-class')">
               <i class="nav-icon fas fa-table"></i>
@@ -189,6 +190,49 @@
                 <i class="nav-icon fas fa-table"></i>
                 <p>Slider<i class="fas fa-angle-left right"></i></p>
             </a>
+      
+      <li class="nav-item has-treeview @yield('category')">
+          <a href="#" class="nav-link @yield('category-class')">
+              <i class="nav-icon fas fa-table"></i>
+              <p>Category<i class="fas fa-angle-left right"></i></p>
+          </a>
+          {{--  <ul class="nav nav-treeview">
+              <li class="nav-item">
+                  <a href="" class="nav-link @yield('addCategory')">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Add Category</p>
+                  </a>
+              </li>
+
+          </ul>  --}}
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+                <a href="{{ route('admin.add.subcategory') }}" class="nav-link @yield('addSubcategory')">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Add SubCategory</p>
+                </a>
+            </li>
+
+        </ul>
+        <ul class="nav nav-treeview">
+            <li class="nav-item">
+                <a href="{{ route('admin.subcategory.list') }}" class="nav-link @yield('subcategoryList')">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Sub Category Details</p>
+                </a>
+            </li>
+
+        </ul>
+        <ul class="nav nav-treeview">
+            <li class="nav-item">
+                <a href="{{ route('admin.category.list') }}" class="nav-link @yield('categoryList')">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Category Details</p>
+                </a>
+            </li>
+
+        </ul>
+      </li>
 
             <ul class="nav nav-treeview">
                 <li class="nav-item">
@@ -199,6 +243,7 @@
                 </li>
             </ul>
         </li>
+
         </ul>
       </nav>
       <!-- /.sidebar-menu -->
