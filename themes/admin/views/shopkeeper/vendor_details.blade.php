@@ -117,7 +117,51 @@
           </button>
         </div>
         <div class="modal-body">
-            <p id="shop-name"></p>
+            <h4></h4><p id="shop-name"></p>
+
+            <table id="example" class="table table-striped table-bordered table-sm" style="width:100%">
+                <thead>
+                <tr>
+                    <th style="text-align:center">SL</th>
+                    <th style="text-align:center">Name</th>
+                    <th style="text-align:center">Email</th>
+                    <th style="text-align:center">Phone</th>
+                    <th style="text-align:center">Varified Date</th>
+                    <th style="text-align:center">Description</th>
+                    
+                    <th style="text-align:center">Percentage</th>
+                    <th style="text-align:center">Status</th>
+                    <th style="text-align:center">View Shop</th>
+                    
+                </tr>
+                </thead>
+                {{-- <tbody>
+                    <?php $i = 1?>
+                    @foreach($shops as $row)
+                        <tr>
+                            <td style="text-align:center">{{$i++}}</td>
+                            <td style="text-align:center">{{$row->shopkeepers->name}}</td>
+                            <td style="text-align:center">{{$row->shopkeepers->email}}</td>
+                            <td style="text-align:center">{{$row->shopkeepers->phone}}</td>
+                            <td style="text-align:center">{{$row->shopkeepers->varified_at}}</td>
+                            <td style="text-align:center">{{$row->shopkeepers->description}}</td>
+                           
+                            <td style="text-align:center">
+                                {{$row->shopkeepers->percentage}}                               
+                            </td>
+                            <td style="text-align:center">
+                                    
+                                @if($row->shopkeepers->status == 1)
+                                <a href="javascript:;"><span class="badge badge-danger inactivating" record="inactivating-vendor" recordid="{{$row->shopkeepers->id}}">INACTIVE</span></a>
+                                @endif
+                                
+                            </td>
+                            
+                        </tr>
+                    @endforeach
+                </tbody> --}}
+
+            </table>
           {{--  <p>One fine body&hellip;</p>  --}}
         </div>
         <div class="modal-footer justify-content-between">

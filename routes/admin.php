@@ -56,7 +56,7 @@ Route::prefix('admin')->middleware('theme:admin')->name('admin.')->group(functio
          Route::get('/subcategory-list',[CategoryController::class,'SubCategoryList'])->name('subcategory.list');
          Route::post('/subcategory-status',[CategoryController::class,'SubCategoryStatus']);
          Route::get('/subcategory/edit/{id}',[CategoryController::class,'SubCategoryEdit']);
-         Route::post('/update-subcategory/{id}',[CategoryController::class,'UpdateSubCategory'])->name('store.subcategory');
+         Route::post('/update-subcategory/{id}',[CategoryController::class,'UpdateSubCategory']);
 
          //slider
          Route::get('/slider-list',[SliderController::class,'sliderList'])->name('slider.list');

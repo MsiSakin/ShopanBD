@@ -17,20 +17,6 @@
           <a href="#" class="d-block">Alexander Pierce</a>
         </div>
       </div>
-
-      <!-- SidebarSearch Form -->
-      {{-- <div class="form-inline">
-        <div class="input-group" data-widget="sidebar-search">
-          <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
-          <div class="input-group-append">
-            <button class="btn btn-sidebar">
-              <i class="fas fa-search fa-fw"></i>
-            </button>
-          </div>
-        </div>
-      </div> --}}
-
-      <!-- Sidebar Menu -->
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
@@ -131,6 +117,7 @@
 
           </ul>
         </li>
+
         <li class="nav-item has-treeview @yield('deliveryMan')">
           <a href="#" class="nav-link @yield('deliveryMan-class')">
               <i class="nav-icon fas fa-table"></i>
@@ -189,7 +176,6 @@
                 <i class="nav-icon fas fa-table"></i>
                 <p>Slider<i class="fas fa-angle-left right"></i></p>
             </a>
-
             <ul class="nav nav-treeview">
                 <li class="nav-item">
                     <a href="{{ route('admin.slider.list') }}" class="nav-link @yield('sliderList')">
@@ -199,6 +185,7 @@
                 </li>
             </ul>
         </li>
+
         </ul>
       </nav>
       <!-- /.sidebar-menu -->
