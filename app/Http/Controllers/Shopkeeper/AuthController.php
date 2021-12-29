@@ -18,6 +18,7 @@ class AuthController extends Controller
     public function login(Request $request){
         if(!Auth::guard('shopkeeper')->attempt($request->only('phone','password'),$request->filled('remember'))){
 
+
                 return response()->json([
                     'status'=>false,
                     'message'=>'Invalid Shopkeeper'
@@ -30,7 +31,6 @@ class AuthController extends Controller
                 'status'=>true
             ],200);
         }
-        // return redirect()->intended(route('shopkeeper.home'));
 
     }
     public function destroy(){
@@ -53,6 +53,7 @@ class AuthController extends Controller
             }
 
             $validation = FacadesValidator::make($request->all(),[
+
                 'phone' => 'min:11|unique:shopkeepers',
                 'password' => 'min:8',
                 'shop_phone' => 'min:11|unique:shops',
@@ -66,8 +67,10 @@ class AuthController extends Controller
                 $errors = $validation->errors();
                 return response()->json([
                     'message'=>$errors,
+
                     'status'=>false
                 ],200);
+
 
             } else{
                 if($request->image && $request->banner){
@@ -83,9 +86,10 @@ class AuthController extends Controller
                     $banner->move($directory2, $bannerName);
                     $bannerUrl = $directory2.$bannerName;
 
-
+    
+    
                     $shopkeeper_id=  Shopkeeper::insertGetId([
-
+                        
                         'name' => $request['name'],
                         'email' => $request['email'],
                         'password' => Hash::make($request['password']),
@@ -113,6 +117,7 @@ class AuthController extends Controller
                         return response()->json([
                             'message'=>'Shopkeeper Request Successful',
                             'status'=>true
+
                         ],200);
                     }else{
                         return response()->json([
@@ -126,5 +131,6 @@ class AuthController extends Controller
             }
 
         }
+
 
 }
