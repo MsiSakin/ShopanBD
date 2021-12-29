@@ -107,10 +107,6 @@
               </li>
             </ul>
           </li>
-
-
-//Vendor
-
           <li class="nav-item has-treeview @yield('vendor')">
             <a href="#" class="nav-link @yield('vendor-class')">
                 <i class="nav-icon fas fa-table"></i>
@@ -135,8 +131,6 @@
 
           </ul>
         </li>
-
-//Delivery Man
         <li class="nav-item has-treeview @yield('deliveryMan')">
           <a href="#" class="nav-link @yield('deliveryMan-class')">
               <i class="nav-icon fas fa-table"></i>
@@ -149,7 +143,6 @@
                       <p>Add Delivery Man</p>
                   </a>
               </li>
-
           </ul>
           <ul class="nav nav-treeview">
             <li class="nav-item">
@@ -158,54 +151,54 @@
                     <p>Delivery Man List</p>
                 </a>
             </li>
-
         </ul>
       </li>
+        <li class="nav-item has-treeview @yield('category')">
+            <a href="#" class="nav-link @yield('category-class')">
+                <i class="nav-icon fas fa-table"></i>
+                <p>Category<i class="fas fa-angle-left right"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="{{ route('admin.add.subcategory') }}" class="nav-link @yield('addSubcategory')">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Add SubCategory</p>
+                    </a>
+                </li>
+            </ul>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="{{ route('admin.subcategory.list') }}" class="nav-link @yield('subcategoryList')">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Sub Category Details</p>
+                    </a>
+                </li>
 
+            </ul>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="{{ route('admin.category.list') }}" class="nav-link @yield('categoryList')">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Category Details</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item has-treeview @yield('slider')">
+            <a href="#" class="nav-link @yield('slider-class')">
+                <i class="nav-icon fas fa-table"></i>
+                <p>Slider<i class="fas fa-angle-left right"></i></p>
+            </a>
 
-      //Category
-      <li class="nav-item has-treeview @yield('category')">
-          <a href="#" class="nav-link @yield('category-class')">
-              <i class="nav-icon fas fa-table"></i>
-              <p>Category<i class="fas fa-angle-left right"></i></p>
-          </a>
-          {{--  <ul class="nav nav-treeview">
-              <li class="nav-item">
-                  <a href="" class="nav-link @yield('addCategory')">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>Add Category</p>
-                  </a>
-              </li>
-
-          </ul>  --}}
-          <ul class="nav nav-treeview">
-            <li class="nav-item">
-                <a href="{{ route('admin.add.subcategory') }}" class="nav-link @yield('addSubcategory')">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Add SubCategory</p>
-                </a>
-            </li>
-
-        </ul>
-        <ul class="nav nav-treeview">
-            <li class="nav-item">
-                <a href="{{ route('admin.subcategory.list') }}" class="nav-link @yield('subcategoryList')">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Sub Category Details</p>
-                </a>
-            </li>
-
-        </ul>
-        <ul class="nav nav-treeview">
-            <li class="nav-item">
-                <a href="{{ route('admin.category.list') }}" class="nav-link @yield('categoryList')">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Category Details</p>
-                </a>
-            </li>
-
-        </ul>
-      </li>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="{{ route('admin.slider.list') }}" class="nav-link @yield('sliderList')">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Slider Details</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Slider;
 use App\Models\Subcategory;
 use Illuminate\Http\Request;
 
@@ -38,4 +39,38 @@ class ApiController extends Controller
             ],204);
         }
     }
+
+    //slider api
+    public function Slider(){
+        $slider = Slider::where('status',1)->select('id','category_id','slider')->get()->toArray();
+        if (!empty($slider)){
+            return response()->json([
+                'data'=>$slider,
+            ],200);
+
+        }else{
+            return response()->json([
+                'status'=>false,
+            ],204);
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

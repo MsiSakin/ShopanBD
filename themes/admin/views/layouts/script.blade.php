@@ -219,7 +219,7 @@ $(document).on("click",".activating",function () {
         })
   </script>
 
-  
+
   <script>
     $(document).on("click",".updateSubCategoryStatus",function () {
         var status = $(this).children("i").attr('status');
@@ -245,4 +245,30 @@ $(document).on("click",".activating",function () {
 
     })
 </script>
+
+    <script>
+        $(document).on("click",".updateSliderStatus",function () {
+            var status = $(this).children("i").attr('status');
+            var slider_id = $(this).attr('slider_id');
+
+            $.ajax({
+                type:"post",
+                url:"/admin/slider-status",
+                data:{status:status,slider_id:slider_id},
+                success:function(res){
+                    if(res['status'] == 0){
+                        $("#slider-"+slider_id).html("<i class='fas fa-toggle-off' aria-hidden='true' status='Inactive'></i>");
+                    }else if(res['status'] == 1){
+
+                        $("#slider-"+slider_id).html("<i class='fas fa-toggle-on' aria-hidden='true' status='Active'></i>");
+                    }
+                },
+                error:function(){
+                    alert("Error!");
+                }
+
+            });
+
+        })
+    </script>
 @stack('scripts')

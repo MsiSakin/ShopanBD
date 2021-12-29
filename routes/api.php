@@ -23,6 +23,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //Admin Api Route
 Route::post('/shopkeeper-request',[AuthController::class,'store']);
 Route::get('/categories',[ApiController::class,'Category']);
+
 Route::get('/sub-categories',[ApiController::class,'SubCategory']);
+Route::get('/sliders',[ApiController::class,'Slider']);
 
 //Vendor Api Route

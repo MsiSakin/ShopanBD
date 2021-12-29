@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ShopkeeperController;
 
 use App\Http\Controllers\Admin\DeliveryManController;
+use App\Http\Controllers\SliderController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->middleware('theme:admin')->name('admin.')->group(function(){
@@ -56,6 +57,15 @@ Route::prefix('admin')->middleware('theme:admin')->name('admin.')->group(functio
          Route::post('/subcategory-status',[CategoryController::class,'SubCategoryStatus']);
          Route::get('/subcategory/edit/{id}',[CategoryController::class,'SubCategoryEdit']);
          Route::post('/update-subcategory/{id}',[CategoryController::class,'UpdateSubCategory'])->name('store.subcategory');
+
+         //slider
+         Route::get('/slider-list',[SliderController::class,'sliderList'])->name('slider.list');
+         Route::get('/add-slider',[SliderController::class,'addSlider']);
+         Route::post('/slider-store',[SliderController::class,'storeSlider']);
+         Route::post('/slider-status',[SliderController::class,'sliderStatus']);
+         Route::get('/slider/edit/{id}',[SliderController::class,'sliderEdit']);
+         Route::post('/slider-update/{id}',[SliderController::class,'UpdateSlider']);
+
     });
 
 });

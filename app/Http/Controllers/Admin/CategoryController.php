@@ -48,6 +48,9 @@ class CategoryController extends Controller
 
 
         $category = Category::findOrFail($id);
+
+        unlink($category->category_image);
+
         $category->category_name = ucwords($request['category_name']);
         if(isset($imageUrl)){
             $category->category_image = $imageUrl;
@@ -160,7 +163,7 @@ class CategoryController extends Controller
 
     //storeSubCategory
     public function UpdateSubCategory(Request $request,$id){
-        
+
         if(isset($request['sub_category_image'])){
         //image insert
             $image = $request->file('sub_category_image');
@@ -171,6 +174,9 @@ class CategoryController extends Controller
         }
 
         $category = Subcategory::findOrFail($id);
+
+        unlink($category->sub_category_image);
+
         $category->sub_category_name = ucwords($request['sub_category_name']);
         $category->category_id = $request['category_id'];
         if(isset($imageUrl)){
