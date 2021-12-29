@@ -56,8 +56,10 @@ Route::prefix('admin')->middleware('theme:admin')->name('admin.')->group(functio
 Route::post('/shopkeeper-request',[AuthController::class,'store']);
 // Route::post('/shopkeeper-login',[ApiController::class,'login']);
 Route::get('/categories',[ApiController::class,'Category']);
-
 Route::get('/sub-categories',[ApiController::class,'SubCategory']);
-Route::get('/sliders',[ApiController::class,'Slider']);
 
-//Vendor Api Route
+Route::get('/sliders/{category_id}',[ApiController::class,'Slider']);
+
+//Customer Api Route
+Route::post('/customer-login',[ApiController::class,'CustomerLogin']);
+Route::post('/verify-code',[ApiController::class,'VerifyCode']);
