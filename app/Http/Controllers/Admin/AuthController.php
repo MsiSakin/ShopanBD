@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use PhpParser\Node\Stmt\Return_;
 
 class AuthController extends Controller
 
@@ -26,8 +25,7 @@ class AuthController extends Controller
             ]);
         }
         return redirect()->intended(route('admin.home'));
-        
-       
+      
     }
     public function destroy(){
         Auth::guard('admin')->logout();

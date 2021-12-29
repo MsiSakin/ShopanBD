@@ -107,10 +107,6 @@
               </li>
             </ul>
           </li>
-
-
-//Vendor
-
           <li class="nav-item has-treeview @yield('vendor')">
             <a href="#" class="nav-link @yield('vendor-class')">
                 <i class="nav-icon fas fa-table"></i>
@@ -135,8 +131,7 @@
 
           </ul>
         </li>
-
-//Delivery Man
+        
         <li class="nav-item has-treeview @yield('deliveryMan')">
           <a href="#" class="nav-link @yield('deliveryMan-class')">
               <i class="nav-icon fas fa-table"></i>
@@ -163,7 +158,7 @@
       </li>
 
 
-      //Category
+      
       <li class="nav-item has-treeview @yield('category')">
           <a href="#" class="nav-link @yield('category-class')">
               <i class="nav-icon fas fa-table"></i>
