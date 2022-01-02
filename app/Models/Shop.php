@@ -13,14 +13,14 @@ class Shop extends Model
     ];
 
     //slider_image_path
-    protected $appends = ['image_path'];
+    protected $appends = ['banner_path'];
 
-    public function getImagePathAttribute(){
+    public function getBannerPathAttribute(){
         return asset($this->banner);
     }
 
     public function shopkeepers(){
-        return $this->belongsTo('App\Models\Shopkeeper','shopkeeper_id')->where('status',1);
+        return $this->belongsTo('App\Models\Shopkeeper','shopkeeper_id');
     }
 
     public function category(){

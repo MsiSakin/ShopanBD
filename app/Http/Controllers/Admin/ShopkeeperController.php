@@ -7,22 +7,20 @@ use App\Models\Category;
 use App\Models\Shop;
 use App\Models\Shopkeeper;
 use Carbon\Carbon;
-use GrahamCampbell\ResultType\Result;
 use Illuminate\Http\Request;
 
 class ShopkeeperController extends Controller
 {
     //Shopkeeper Request
     public function vendorList(){
-        $shopkeepers = Shopkeeper::where('status','0')->get();
+        $shopkeepers = Shopkeeper::where('status','0')->latest()->get();
         return view('shopkeeper.vendor_list',compact('shopkeepers'));
     }
 
      //Shopkeeper Request
      public function vendorDetails(){
         
-        $shops = Shop::with('shopkeepers')->get();
-        
+        $shops = Shop::with('shopkeepers')->get();       
         return view('shopkeeper.vendor_details',compact('shops'));
     }
 

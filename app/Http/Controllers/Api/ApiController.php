@@ -173,12 +173,28 @@ class ApiController extends Controller
     }
 
 
+    //All Shop
+    public function allShop(){
+    $shops = Shop::where('shop_status',1)->select('id','shopkeeper_id','category_id','shop_name','shop_address','shop_description','banner','shop_phone','shop_status')->get()->toArray();
+    if(!@empty($shops)){
+        return response()->json([
+            'status'=> true,
+            'shop' => $shops,
+        ],200);
+    }else{
+        return response()->json([
+            'status'=> false,
+            'message' => 'No Shop Found!',
+        ],200);
+    }
+    }
 
-     //shop info api
+
+
+     //shop info 
      public function shopInfo($id){
         
-         
-        $shop = Shop::select('id','category_id','shop_name','shop_address','shop_description','banner','shop_phone','shop_status',)->where('shopkeeper_id',$id)->first();
+        $shop = Shop::where('id',$id)->select('id','category_id','shop_name','shop_address','shop_description','banner','shop_phone','shop_status',)->first();
            
 
         if (!empty($shop)){
@@ -196,7 +212,66 @@ class ApiController extends Controller
     }
 
 
+    //shop Slider info
+    public function shopCoverImage($id){
+        
+        $shopCover = ShopImage::select('id','shop_slider')->where('shop_id',$id)->get();
 
+        if (!empty($shopCover)){
+            return response()->json([
+                'data'=>$shopCover,
+                'status'=>true
+            ],200);
+
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Shop Slider Not Found!"
+            ],200);
+        }
+    }
+
+
+    
+
+
+    //shop cover upload
+    public function shopCover(Request $request, $id){
+        if(!$request->hasFile('shop_slider')) {
+            return response()->json([
+                'status'=>false,
+                'message'=>'upload_file_not_found',
+        ],200);
+        }
+        $images = $request->file('shop_slider');
+
+        foreach ($images as $img) {
+            $imageName = uniqid().'.'.$img->extension();
+            $directory = 'shopkeeper/images/shop/slider/';
+            $img->move($directory, $imageName);
+            $uplodPath = $directory.$imageName;
+
+            $save = new ShopImage();
+            $save->shop_id = $id;
+            $save->shop_slider = $uplodPath;
+            $save->save();
+        }
+        if($save){
+            return response()->json([
+                'status'=>true,
+                'message' => 'file_uploaded',
+            ], 200);
+            }else{
+                
+
+                return response()->json([
+                'status'=>false,
+                'message' =>'invalid_file_format',
+                ], 200);  
+            }
+
+
+    }
 
 
 
@@ -204,11 +279,9 @@ class ApiController extends Controller
      public function shopUpdate(Request $request, $id)
      {
 
-
-   
          $validation = Validator::make($request->all(),[
             'shop_name' => 'required',
-             'shop_phone' => 'min:11|unique:shops',
+             'shop_phone' => 'min:11',
              'shop_address' => 'required',
              'banner' => 'required',
              'category_id' => 'required',
@@ -228,9 +301,9 @@ class ApiController extends Controller
          } else{
             
              if($request->banner){
-                $shop = Shop::where('shopkeeper_id',$id)->first();              
-                
-                 unlink($shop->banner);
+                $shop = Shop::where('id',$id)->first(); 
+                if($shop){
+                    unlink($shop->banner);
                  $banner = $request->file('banner');
                  $bannerName = uniqid().'.'.$banner->extension();
                  $directory2 = 'shopkeeper/images/shop/';
@@ -260,8 +333,17 @@ class ApiController extends Controller
                          'message'=>'Invalid Request!',
                          'status'=>false
                      ],200);
-                 }
-             }
+                 }               
+            }else{
+                return response()->json([
+                    'message'=>'Shop Not found!',
+                    'status'=>false
+                ],200);
+            }
+                     
+                
+                 
+         }
 
              
 

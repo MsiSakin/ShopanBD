@@ -52,34 +52,49 @@
                         @foreach($shops as $row)
                             <tr>
                                 <td style="text-align:center">{{$i++}}</td>
-                                <td style="text-align:center">{{$row->shopkeepers->name}}</td>
-                                <td style="text-align:center">{{$row->shopkeepers->email}}</td>
-                                <td style="text-align:center">{{$row->shopkeepers->phone}}</td>
-                                <td style="text-align:center">{{$row->shopkeepers->varified_at}}</td>
-                                <td style="text-align:center">{{$row->shopkeepers->description}}</td>
-                                <td style="text-align:center"><img width='40' height='30' src="{{asset($row->shopkeepers->image)}}"></td>
+                                <td style="text-align:center">{{$row->shopkeepers->name ?? ""}}</td>
+                                <td style="text-align:center">{{$row->shopkeepers->email ?? ""}}</td>
+                                <td style="text-align:center">{{$row->shopkeepers->phone ?? ""}}</td>
+                                <td style="text-align:center">{{$row->shopkeepers->varified_at ?? ""}}</td>
+                                <td style="text-align:center">{{$row->shopkeepers->description ?? ""}}</td>
+                                <td style="text-align:center">
+                                    @if(!@empty($row->shopkeepers->image))
+                               
+                                    <img width='40' height='30' src="{{asset($row->shopkeepers->image)}}">
+                                    @endif
+                                   
+                                </td>
                                 
                                
                                 <td style="text-align:center">
-                                    {{$row->shopkeepers->percentage}}
+                                    {{$row->shopkeepers->percentage ?? ""}}
                                     
                                 </td>
 
                                 <td style="text-align:center">
+                                   
+                                        @if($row->shopkeepers->status == 0)
+                                        <a href="javascript:;">
+                                            <span class="badge badge-success activating" record="activating-vendor" recordid="{{$row->shopkeepers->id}}">ACTIVE</span>
+                                           
+                                        </a>
+                                        @elseif($row->shopkeepers->status == 1)
+                                        <a href="javascript:;">
+                                            <span class="badge badge-danger inactivating" record="inactivating-vendor" recordid="{{$row->shopkeepers->id}}">INACTIVE</span>
+                                        </a>
+                                        @endif
+                                    
                                         
-                                    @if($row->shopkeepers->status == 1)
-                                    <a href="javascript:;"><span class="badge badge-danger inactivating" record="inactivating-vendor" recordid="{{$row->shopkeepers->id}}">INACTIVE</span></a>
-                                       
-                                        
-                                    @endif
+                                    
                                     
                                 </td>
                                 
                                 <td style="text-align:center">
-                                    
+                                    @if(!empty($row->shopkeepers['id']))
                                       <button type="button" id="viewShop" class="btn btn-sm btn-info" data-id="{{ $row['id'] }}" data-toggle="modal" data-target="#modal-lg">
                                         View Shop
                                       </button>
+                                      @endif
                                 </td>
 
 
@@ -176,15 +191,17 @@
                    $("#shop-name").html(result['shop']['shop_name']);
                     
                     $("#shop_address").html(result['shop']['shop_address']);
+                    $("#shop_phone").html(result['shop']['shop_phone']);
                     $("#shop_description").html(result['shop']['shop_description']);
                
                     $("#shop_image").html(result['shop']['image_path']);
-                    if(result['shop']['status']==1){
+                    if(result['shop']['shop_status']==1){
                         $("#shop_active_status").html("Active");
                     }else{
                         $("#shop_inactive_status").html("Inactive");
                     }
                     $("#shop_category").html(result['shop']['category']['category_name']);
+
  
                 },
 
