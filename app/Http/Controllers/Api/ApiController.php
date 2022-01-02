@@ -349,5 +349,86 @@ class ApiController extends Controller
     }
 
 
+    //SubcategoryWiseProduct
+    public function SubcategoryWiseProduct($sub_category_id){
+        $subcategory_wise_product = Product::where('sub_category_id',$sub_category_id)->where('status',1)->select('id','category_id','sub_category_id','shop_id','product_name','image','price','discount','discounted_price','short_des','long_des')->get()->toArray();
+        if($subcategory_wise_product){
+            return response()->json([
+                'status'=> true,
+                "data"=>$subcategory_wise_product
+            ],200);
+        }else{
+            return response()->json([
+                'status'=> false,
+                'message'=>"Product Not Found"
+            ],200);
+        }
+    }
+
+    //ProductDetails
+    public function ProductDetails(){
+        $product_details = Product::latest()->select('id','category_id','sub_category_id','shop_id','product_name','image','price','discount','discounted_price','short_des','long_des')->where('status',1)->get()->toArray();
+        if($product_details){
+            return response()->json([
+                'status'=> true,
+                "data"=>$product_details
+            ],200);
+        }else{
+            return response()->json([
+                'status'=> false,
+                'message'=>"Product Not Found"
+            ],200);
+        }
+    }
+
+    //CategoryWiseProduct
+    public function CategoryWiseProduct($category_id){
+        $category_wise_products = Product::where('category_id',$category_id)->where('status',1)->select('id','category_id','sub_category_id','shop_id','product_name','image','price','discount','discounted_price','short_des','long_des')->get()->toArray();
+        if($category_wise_products){
+            return response()->json([
+                'status'=> true,
+                "data"=>$category_wise_products
+            ],200);
+        }else{
+            return response()->json([
+                'status'=> false,
+                'message'=>"Product Not Found"
+            ],200);
+        }
+    }
+
+    //ShopWiseProducts
+    public function ShopWiseProducts($shop_id){
+        $shop_wise_products = Product::where('shop_id',$shop_id)->where('status',1)->select('id','category_id','sub_category_id','shop_id','product_name','image','price','discount','discounted_price','short_des','long_des')->get()->toArray();
+        if($shop_wise_products){
+            return response()->json([
+                'status'=> true,
+                "data"=>$shop_wise_products
+            ],200);
+        }else{
+            return response()->json([
+                'status'=> false,
+                'message'=>"Product Not Found"
+            ],200);
+        }
+    }
+
+    //SearchProduct
+    public function SearchProduct(Request $request){
+        $search = Product::where('product_name', 'LIKE', "%{$request['search_product']}%")->select('id','category_id','sub_category_id','shop_id','product_name','image','price','discount','discounted_price','short_des','long_des')->where('status',1)->get()->toArray();
+        if($search){
+            return response()->json([
+                'status'=> true,
+                "data"=>$search
+            ],200);
+        }else{
+            return response()->json([
+                'status'=> false,
+                'message'=>"Product Not Found"
+            ],200);
+        }
+    }
+
+
 
 }

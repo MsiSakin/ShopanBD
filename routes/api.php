@@ -65,6 +65,10 @@ Route::get('/sliders/{category_id}',[ApiController::class,'Slider']);
 //Customer Api Route
 Route::post('/customer-login',[ApiController::class,'CustomerLogin']);
 Route::post('/verify-code',[ApiController::class,'VerifyCode']);
-
+Route::get('/subcategory-wise-products/{id}',[ApiController::class,'SubcategoryWiseProduct']);
+Route::get('/product-details',[ApiController::class,'ProductDetails']);
+Route::get('/category-wise-products/{category_id}',[ApiController::class,'CategoryWiseProduct']);
+Route::get('/shop-wise-products/{shop_id}',[ApiController::class,'ShopWiseProducts']);
+Route::post('/search-products',[ApiController::class,'SearchProduct']);
 //Vendor Api Route
 Route::post('/add-product',[ApiController::class,'AddProduct']);

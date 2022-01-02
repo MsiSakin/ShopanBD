@@ -32,4 +32,10 @@ class Shop extends Model
     }
 
 
+    //category
+    public function shop(){
+        return $this->belongsTo(Category::class,'category_id');
+    }
+
+
 }
