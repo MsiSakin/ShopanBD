@@ -25,6 +25,10 @@ class Shopkeeper extends Authenticatable
 
     ];
 
+    public function shops(){
+        return $this->hasMany(Shop::class,'shopkeeper_id');
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *

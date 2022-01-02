@@ -12,8 +12,24 @@ class Shop extends Model
         'shopkeeper_id','category_id','shop_name','shop_address','shop_description','banner','shop_phone','shop_status',
     ];
 
-    public function shopkeepers(){
-        return $this->belongsTo('App\Models\Shopkeeper','shopkeeper_id');
+    //slider_image_path
+    protected $appends = ['image_path'];
+
+    public function getImagePathAttribute(){
+        return asset($this->banner);
     }
+
+    public function shopkeepers(){
+        return $this->belongsTo('App\Models\Shopkeeper','shopkeeper_id')->where('status',1);
+    }
+
+    public function category(){
+        return $this->belongsTo('App\Models\Category','category_id');
+    }
+
+    public function shop_image(){
+        return $this->hasMany(ShopImage::class,'shop_id');
+    }
+
 
 }
