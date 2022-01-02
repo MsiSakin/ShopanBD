@@ -33,8 +33,8 @@ class CategoryController extends Controller
             'category_name' => 'required|min:2|unique:categories,category_name',
         ]);
 
-        if(!empty($request['category_image'])){
         //image insert
+        if(!empty($request['category_image'])){
         $image = $request->file('category_image');
         $imageName = uniqid().'.'.$image->extension();
         $directory = 'category/images/category_image/';

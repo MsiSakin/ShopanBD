@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\Shop;
 use App\Models\ShopImage;
 use App\Models\Shopkeeper;
@@ -152,9 +153,10 @@ class ApiController extends Controller
         if(!empty($request['code'])){
             $user = User::where('code',$request['code'])->count();
             if($user > 0){
+                $customers = User::where('code',$request['code'])->first();
                 return response()->json([
                     'status'=> true,
-                    'message'=>"Login Successfully"
+                    'data'=> $customers
                 ],200);
             }else{
                 return response()->json([
@@ -169,6 +171,7 @@ class ApiController extends Controller
             ],200);
         }
     }
+
 
 
      //shop info api
@@ -267,6 +270,84 @@ class ApiController extends Controller
 
      }
    
+
+    //AddProduct
+    public function AddProduct(Request $request){
+        $validation = Validator::make($request->all(),[
+            'category_id' => 'required',
+            'sub_category_id' => 'required',
+            'product_name' => 'required|min:2|max:150',
+            'product_image' => 'required',
+            'short_des' => 'required',
+            'long_des' => 'required',
+            'price' => 'required',
+            'shop_id' => 'required'
+        ]);
+
+        if($validation->fails()){
+            $errors = $validation->errors();
+            return response()->json([
+                'message'=>$errors,
+                'status'=>false
+            ],200);
+        }else{
+
+
+             //image insert
+        if(!empty($request['product_image'])){
+            $image = $request->file('product_image');
+            $imageName = uniqid().'.'.$image->extension();
+            $directory = 'category/images/product_image/';
+            $image->move($directory, $imageName);
+            $imageUrl = $directory.$imageName;
+            }else{
+                $imageUrl="";
+            }
+
+            // return $request->all();
+            $product = new Product;
+            $product->category_id = $request['category_id'];
+            $product->sub_category_id = $request['sub_category_id'];
+            $product->shop_id = $request['shop_id'];
+            $product->product_name = $request['product_name'];
+            if(isset($imageUrl)){
+                $product->image = $imageUrl;
+            }
+            $product->short_des = $request['short_des'];
+            $product->long_des = $request['long_des'];
+            $product->price = $request['price'];
+            if(!empty($request['discount'])){
+                $product->discount = $request['discount'];
+            }else{
+                $product->discount = 0;
+            }
+
+            //discounted price calculate
+            $discounted_price = $request['price'] - ($request['price']*$request['discount']/100);
+
+            if(isset($discounted_price)){
+                $product->discounted_price = $discounted_price;
+            }else{
+                $product->discounted_price = $request['price'];
+            }
+            $product->status = 1;
+            $product->save();
+
+            if($product){
+                return response()->json([
+                    'status'=> true,
+                    'message'=>"Product Added Successfully"
+                ],200);
+            }else{
+                return response()->json([
+                    'status'=> false,
+                    'message'=>"Product Not Added"
+                ],200);
+            }
+
+        }
+    }
+
 
 
 }
