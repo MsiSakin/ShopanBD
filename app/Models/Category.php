@@ -19,4 +19,8 @@ class Category extends Model
     public function getImagePathAttribute(){
         return asset($this->category_image);
     }
+
+    // public function category(){
+    //     return $this->hasMany(Shop::class,'category_id');
+    // }
 }

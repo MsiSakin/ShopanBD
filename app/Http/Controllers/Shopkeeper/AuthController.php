@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Shopkeeper;
 
 use App\Http\Controllers\Controller;
 use App\Models\Shop;
+use App\Models\ShopImage;
 use App\Models\Shopkeeper;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -25,7 +26,7 @@ class AuthController extends Controller
                 ],200);
 
         }else{
-            $shop = Shopkeeper::where('phone',$request->phone)->first();
+            $shop = Shopkeeper::with('shops')->where('phone',$request->phone)->first();
             return response()->json([
                 'data'=>$shop,
                 'status'=>true
@@ -42,6 +43,7 @@ class AuthController extends Controller
         public function store(Request $request)
         {
 
+
             if(empty($request['name']) || empty($request['phone']) || empty($request['password'])   ){
                 $error_message='Please Fill All the Field';
             }
@@ -56,18 +58,20 @@ class AuthController extends Controller
 
                 'phone' => 'min:11|unique:shopkeepers',
                 'password' => 'min:8',
+                'image' => 'required',
                 'shop_phone' => 'min:11|unique:shops',
                 'shop_address' => 'required',
                 'banner' => 'required',
                 'category_id' => 'required',
                 'shop_description' => 'required',
+                
             ]);
-
+ 
             if($validation->fails()){
                 $errors = $validation->errors();
                 return response()->json([
                     'message'=>$errors,
-
+                    
                     'status'=>false
                 ],200);
 
@@ -85,8 +89,7 @@ class AuthController extends Controller
                     $directory2 = 'shopkeeper/images/shop/';
                     $banner->move($directory2, $bannerName);
                     $bannerUrl = $directory2.$bannerName;
-
-    
+         
     
                     $shopkeeper_id=  Shopkeeper::insertGetId([
                         
@@ -106,13 +109,12 @@ class AuthController extends Controller
                     $shop->category_id = $request->category_id;
                     $shop->shopkeeper_id = $shopkeeper_id;
                     $shop->shop_address = $request->shop_address;
-                    $shop->banner = $request->banner;
+                    $shop->banner = $bannerUrl;
                     $shop->shop_description = $request->shop_description;
                     $shop->shop_phone = $request->shop_phone;
                     $shop->shop_status = '0';
                     $shop->save();
-
-
+                   
                     if(!@empty($shop)){
                         return response()->json([
                             'message'=>'Shopkeeper Request Successful',
