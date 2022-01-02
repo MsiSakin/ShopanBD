@@ -18,7 +18,7 @@ class ShopImage extends Model
         return asset($this->shop_slider);
     }
 
-    public function shopImage(){
+    public function shopCover(){
         return $this->belongsTo('App\Models\Shop','shop_id');
     }
 }
