@@ -7,6 +7,7 @@ use App\Models\Admin;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Shop;
+use App\Models\ShopImage;
 use App\Models\Shopkeeper;
 use App\Models\Slider;
 use App\Models\Subcategory;
@@ -24,6 +25,7 @@ class ApiController extends Controller
         if(!Auth::guard('admin')->attempt($request->only('email','password'),$request->filled('remember'))){
             return response()->json([
                 'status'=>false,
+
                 'message'=>"Invalid Admin!"
             ],200);
         }else{
@@ -33,7 +35,8 @@ class ApiController extends Controller
                 'status'=>true
             ],200);
         }
-        // return redirect()->intended(route('admin.home'));
+       
+
 
     }
 
@@ -168,6 +171,105 @@ class ApiController extends Controller
             ],200);
         }
     }
+
+
+
+     //shop info api
+     public function shopInfo($id){
+        
+         
+        $shop = Shop::select('id','category_id','shop_name','shop_address','shop_description','banner','shop_phone','shop_status',)->where('shopkeeper_id',$id)->first();
+           
+
+        if (!empty($shop)){
+            return response()->json([
+                'data'=>$shop,
+                'status'=>true
+            ],200);
+
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Shop Not Found"
+            ],200);
+        }
+    }
+
+
+
+
+
+
+     //Shop Update
+     public function shopUpdate(Request $request, $id)
+     {
+
+
+   
+         $validation = Validator::make($request->all(),[
+            'shop_name' => 'required',
+             'shop_phone' => 'min:11|unique:shops',
+             'shop_address' => 'required',
+             'banner' => 'required',
+             'category_id' => 'required',
+             'shop_description' => 'required',
+             
+         ]);
+
+         if($validation->fails()){
+             $errors = $validation->errors();
+             return response()->json([
+                 'message'=>$errors,
+                 
+                 'status'=>false
+             ],200);
+
+
+         } else{
+            
+             if($request->banner){
+                $shop = Shop::where('shopkeeper_id',$id)->first();              
+                
+                 unlink($shop->banner);
+                 $banner = $request->file('banner');
+                 $bannerName = uniqid().'.'.$banner->extension();
+                 $directory2 = 'shopkeeper/images/shop/';
+                 $banner->move($directory2, $bannerName);
+                 $bannerUrl = $directory2.$bannerName;
+                
+                
+                 $shop->shop_name = $request->shop_name;
+                 $shop->category_id = $request->category_id;
+                 $shop->shop_address = $request->shop_address;
+                 $shop->banner = $bannerUrl;
+                 $shop->shop_description = $request->shop_description;
+                 $shop->shop_phone = $request->shop_phone;
+                 $shop->shop_status = $request->shop_status;
+                 
+                 $shop->save();
+                
+              
+                 if(!@empty($shop)){
+                     return response()->json([
+                         'message'=>'Shopkeeper Updated Successfully',
+                         'status'=>true
+
+                     ],200);
+                 }else{
+                     return response()->json([
+                         'message'=>'Invalid Request!',
+                         'status'=>false
+                     ],200);
+                 }
+             }
+
+             
+
+
+         }
+
+     }
+   
 
     //AddProduct
     public function AddProduct(Request $request){
@@ -326,12 +428,6 @@ class ApiController extends Controller
             ],200);
         }
     }
-
-
-
-
-
-
 
 
 
