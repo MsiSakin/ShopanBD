@@ -15,7 +15,9 @@ use Illuminate\Support\Facades\Route;
 */
 //frontend
 Route::get('/',[HomeController::class,'HomePage']);
-
+Route::get('/categories/{id}',[HomeController::class,'CategoryShow']);
+Route::get('/sub-categories/{id}',[HomeController::class,'SubcategoryShow']);
+Route::get('/shop',[HomeController::class,'Shop']);
 
 //admin panel
 Route::get('/home', function () {
