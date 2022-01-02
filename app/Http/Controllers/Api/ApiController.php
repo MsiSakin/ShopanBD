@@ -24,6 +24,7 @@ class ApiController extends Controller
         if(!Auth::guard('admin')->attempt($request->only('email','password'),$request->filled('remember'))){
             return response()->json([
                 'status'=>false,
+
                 'message'=>"Invalid Admin!"
             ],200);
         }else{
@@ -33,7 +34,8 @@ class ApiController extends Controller
                 'status'=>true
             ],200);
         }
-        // return redirect()->intended(route('admin.home'));
+       
+
 
     }
 
@@ -169,6 +171,7 @@ class ApiController extends Controller
         }
     }
 
+
     //AddProduct
     public function AddProduct(Request $request){
         $validation = Validator::make($request->all(),[
@@ -245,5 +248,6 @@ class ApiController extends Controller
 
         }
     }
+
 
 }
