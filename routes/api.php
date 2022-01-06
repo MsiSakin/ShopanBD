@@ -57,8 +57,19 @@ Route::post('/shopkeeper-request',[AuthController::class,'store']);
 Route::get('/shopkeeper/shop-info/{id}',[ApiController::class,'shopInfo']);
 Route::post('/shopkeeper/shop-update/{id}',[ApiController::class,'shopUpdate']);
 Route::post('/shopkeeper/shop-cover-upload/{id}',[ApiController::class,'shopCover']);
-Route::get('/shopkeeper/shop-cover-image/{id}',[ApiController::class,'shopCoverImage']);
+Route::get('/shopkeeper/shop-cover-image/{id}',[ApiController::class,'shopCoverImage']); 
 Route::get('/all-shop',[ApiController::class,'allShop']);
+Route::get('/product-information/{id}',[ApiController::class,'productInfo']);
+Route::post('/product-information/update/{id}',[ApiController::class,'productInfoUpdate']);
+Route::get('/product-status/view/{id}',[ApiController::class,'productStatus']);
+Route::post('/product-status/update/{id}',[ApiController::class,'productStatusUpdate']);
+
+//Delivery man
+Route::post('/delivery-man/login',[ApiController::class,'deliveryManLogin']);
+Route::get('/delivery-man/image/{id}',[ApiController::class,'deliveryManImage']);
+Route::post('/delivery-man/image/update/{id}',[ApiController::class,'deliveryManImageUpdate']);
+Route::get('/delivery-man/information/{id}',[ApiController::class,'deliveryManInfo']);
+Route::post('/delivery-man/information-update/{id}',[ApiController::class,'deliveryManInfoUpdate']);
 
 
 Route::get('/categories',[ApiController::class,'Category']);

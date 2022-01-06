@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\DeliveryMan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class DeliveryManController extends Controller
 {
@@ -18,42 +19,54 @@ class DeliveryManController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string|min:8',        
             'phone' => 'required|min:11|unique:delivery_men,phone',
             'image' => 'required',
             'address' => 'required',
         ]);
        
        
-
-        // return $request->phone;
         $image = $request->file('image');
-        
         $imageName = uniqid().'.'.$image->extension();
         $directory = 'delivery/images/deliveryman/';
         $image->move($directory, $imageName);
         $imageUrl = $directory.$imageName;
 
-        $image2 = $request->file('docimage');
-        $imageName2 = uniqid().'.'.$image2->extension();
-        $directory2 = 'delivery/images/documents/';
-        $image2->move($directory2, $imageName2);
-        $imageUrl2 = $directory2.$imageName2;
+        if($request->file('docimage')){
+            $image2 = $request->file('docimage');
+            $imageName2 = uniqid().'.'.$image2->extension();
+            $directory2 = 'delivery/images/documents/';
+            $image2->move($directory2, $imageName2);
+            $imageUrl2 = $directory2.$imageName2;
 
+            $deliveryMan = new DeliveryMan ;
+            $deliveryMan->name = $request->name;
+            $deliveryMan->phone = $request->phone;
+            $deliveryMan->address = $request->address;
+            $deliveryMan->image = $imageUrl;
+            $deliveryMan->document_image = $imageUrl2;
+            $deliveryMan->document_no = $request->idnumber;
+            $deliveryMan->password = Hash::make($request->password);
+            $deliveryMan->status = 1;
+            $deliveryMan->varified_at = Carbon::now();
+            $deliveryMan->save();
 
+            return redirect()->back();
+        }
 
          $deliveryMan = new DeliveryMan ;
          $deliveryMan->name = $request->name;
          $deliveryMan->phone = $request->phone;
          $deliveryMan->address = $request->address;
          $deliveryMan->image = $imageUrl;
-         $deliveryMan->document_image = $imageUrl2;
+         $deliveryMan->document_image = '';
          $deliveryMan->document_no = $request->idnumber;
+         $deliveryMan->password = Hash::make($request->password);
          $deliveryMan->status = 1;
          $deliveryMan->varified_at = Carbon::now();
          $deliveryMan->save();
 
-         return redirect()->back();
+         return redirect()->back()->with('message','Delivery man added successfully');;
 
 
     }

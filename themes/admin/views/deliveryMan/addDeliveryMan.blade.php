@@ -28,7 +28,10 @@
                 @csrf
                 <div class="card card-default">
                     <div class="card-header">
-                        <h3 class="card-title">Stock Add</h3>
+                        @if(Session::get('message'))
+                        <p class="text-success pl-2">{{ Session::get('message') }}</p>
+                    @endif
+                        <h3 class="card-title">Delivery Man Add</h3>
         
                         <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -64,29 +67,29 @@
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="form-group">
-                                    <label for="name"> Name</label>
-                                    <input type="text" name="name" class="form-control">
+                                    <label for="name"> Name</label>&nbsp;<span class="text-danger">*</span>
+                                    <input type="text" name="name" class="form-control" required>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="address">Address</label>
-                                    <textarea name="address" class="form-control" rows="1"></textarea>
+                                    <label for="address">Address</label>&nbsp;<span class="text-danger">*</span>
+                                    <input name="address" name="address" class="form-control" required>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="phone">Phone Number</label>
-                                    <input type="number" name="phone" class="form-control">
+                                    <label for="phone">Phone Number</label>&nbsp;<span class="text-danger">*</span>
+                                    <input type="number" name="phone" class="form-control" required>
                                 </div>
+                                
 
                                 <div class="form-group">
-                                    <label for="image">Image</label>
-                                    <input type="file" name="image" class="form-control">
+                                    <label for="image">Image</label>&nbsp;<span class="text-danger">*</span>
+                                    <input type="file" name="image" class="form-control" required>
                                 </div>
 
                             </div>
 
                         <div class="col-lg-6">
-                            
 
                             <div class="form-group">
                                 <label for="docimage">ID Image</label>
@@ -99,7 +102,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="idnumber">Password</label>
+                                <label for="password">Password</label>&nbsp;<span class="text-danger">*</span>
                                 <input type="password" name="password" class="form-control" required min="8">
                             </div>
 

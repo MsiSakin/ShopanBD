@@ -26,11 +26,19 @@ class AuthController extends Controller
                 ],200);
 
         }else{
-            $shop = Shopkeeper::with('shops')->where('phone',$request->phone)->first();
-            return response()->json([
-                'data'=>$shop,
-                'status'=>true
-            ],200);
+            $shopkeeper = Shopkeeper::where('phone',$request->phone)->first();
+            if($shopkeeper->status == 0){
+                return response()->json([
+                    'message'=> 'You are currently invalid! Please contact with admin',
+                    'status'=>false
+                ],200);
+            }else{
+                return response()->json([
+                    'data'=>$shopkeeper,
+                    'status'=>true
+                ],200);
+            }
+            
         }
 
     }
@@ -60,6 +68,7 @@ class AuthController extends Controller
                 'password' => 'min:8',
                 'image' => 'required',
                 'shop_phone' => 'min:11|unique:shops',
+                'email' => 'email|unique:shopkeepers',
                 'shop_address' => 'required',
                 'banner' => 'required',
                 'category_id' => 'required',
