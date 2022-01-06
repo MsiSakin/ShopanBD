@@ -18,7 +18,11 @@ Route::get('/',[HomeController::class,'HomePage']);
 Route::get('/categories/{id}',[HomeController::class,'CategoryShow']);
 Route::get('/sub-categories/{id}',[HomeController::class,'SubcategoryShow']);
 Route::get('/shop',[HomeController::class,'Shop']);
-
+Route::get('/shop/{id}',[HomeController::class,'ShopProduct']);
+Route::get('/product-details/{product_id}',[HomeController::class,'productDetails']);
+Route::get('/cart/{id}',[HomeController::class,'Cart']);
+Route::get('/cart-details',[HomeController::class,'CartDetails']);
+Route::post('/quantity-update',[HomeController::class,"QuantityUpdate"]);
 //admin panel
 Route::get('/home', function () {
     return view('home');
