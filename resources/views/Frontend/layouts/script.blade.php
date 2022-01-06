@@ -44,4 +44,26 @@
     @endif
 </script>
 
+{{--  custome script  --}}
+<script>
+    $(document).ready(function(){
+        $(document).on('click','#quantity',function(){
+            let quantity = $('.update_qty').val();
 
+            let product_id = $(this).attr('data-id');
+
+            $.ajax({
+            	type:"post",
+                url:"/quantity-update",
+                data: {quantity:quantity,product_id:product_id},
+                success:function(res){
+
+                    $('#subtotal').html(res);
+                },
+                error:function(){
+                    alert(!Error);
+                }
+            });
+        });
+    });
+</script>

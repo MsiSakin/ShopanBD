@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\Category;
+use App\Models\Coupon;
 use App\Models\Product;
 use App\Models\Shop;
 use App\Models\ShopImage;
 use App\Models\Slider;
 use App\Models\Subcategory;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -92,7 +95,8 @@ class HomeController extends Controller
                 $cart_add->product_id = $id;
                 $cart_add->shop_id = $product['shop_id'];
                 $cart_add->quantity = 1;
-                $cart_add->price = $product['price'];
+                $cart_add->price = $product['discounted_price'];
+                $cart_add->sub_total = $product['discounted_price']*1;
                 $cart_add->save();
                 return redirect()->back()->with('message',"Add to cart successfully!");
             }
@@ -105,25 +109,136 @@ class HomeController extends Controller
 
         }else{
             $session_id = Session::get('session_id');
-            $cart_details = Cart::with('product','shop')->where('session_id',$session_id)->get()->toArray();
+            $cart_details = Cart::with('product','shop')->where('session_id',$session_id)->get();
 
+            $total = $cart_details->sum('sub_total');
             // return $cart_details;
-            return view('Frontend.cart.cart_details',compact('cart_details'));
+            return view('Frontend.cart.cart_details',compact('cart_details','total'));
         }
     }
 
     //QuantityUpdate
-    public function QuantityUpdate(Request $request){
-        $quantity = $request['quantity'];
-        $product_id = $request['product_id'];
+    public function QuantityUpdateMinus($cart_id){
+        $cart = Cart::where('id',$cart_id)->first();
+        if($cart['quantity'] <= 1){
+            $cart->quantity = 1;
+            $cart->sub_total = $cart['price']*$cart['quantity'];
+            $cart->save();
+        }else{
+            $cart->decrement('quantity');
+            $cart->sub_total = $cart['price']*$cart['quantity'];
+            $cart->save();
+        }
 
-        $cart = Cart::where('product_id',$product_id)->first();
-        $cart->quantity = $quantity;
-        $cart->save();
-        $sub_total = $cart['price']*$quantity;
-        return $sub_total;
-
-
+        return back();
 
     }
+
+    //QuantityUpdatePlus
+    public function QuantityUpdatePlus($cart_id){
+        $cart = Cart::where('id',$cart_id)->first();
+        $cart->increment('quantity');
+        $cart->sub_total = $cart['price']*$cart['quantity'];
+        $cart->save();
+        return back();
+    }
+
+    //CouponApply
+    public function CouponApply(Request $request){
+        $coupon = $request['coupon_name'];
+
+        $coupon_data = Coupon::where('coupon_name',$coupon)->count();
+        if($coupon_data > 0){
+            $coupon_details = Coupon::where('coupon_name',$coupon)->first();
+            $validity_check = Carbon::now();
+            if($coupon_details['validity'] < $validity_check){
+                return redirect()->back()->with('error',"Coupon Already Expired");
+            }else{
+                Session::put('coupon_session',[
+                    'coupon_name'=>$coupon_details['coupon_name'],
+                    'coupon_discount'=>$coupon_details['discount']
+                ]);
+
+                return redirect()->back()->with('success',"Coupon Applied");
+            }
+
+        }else{
+            return redirect()->back()->with('error',"Invalid Coupon Apply");
+        }
+    }
+
+
+    // //Checkout login check
+    // public function Checkout(){
+    //     $user = User::all();
+    //     if(){
+
+    //         return redirect('/checkout-form');
+    //     }else{
+    //         return redirect('/login');
+    //     }
+    // }
+
+    //UserLogin
+    public function UserLogin(Request $request){
+        $request->validate([
+            'phone' => 'required|min:11|unique:users',
+        ]);
+
+        $customer = new User;
+        $code = rand(0, 999999);
+
+        $customer->phone = $request['phone'];
+        $customer->code = $code;
+        $customer->save();
+
+        $to = $request['phone'];
+        $token = "5fe395aac73568229b46318e68515658";
+        $message = "Hello Sir,  SopanBD OTP Is: ".$code;
+
+        $url = "http://api.greenweb.com.bd/api.php?json";
+
+
+        $data= array(
+        'to'=>"$to",
+        'message'=>"$message",
+        'token'=>"$token"
+        ); // Add parameters in key value
+        $ch = curl_init(); // Initialize cURL
+        curl_setopt($ch, CURLOPT_URL,$url);
+        curl_setopt($ch, CURLOPT_ENCODING, '');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $smsresult = curl_exec($ch);
+
+        if(isset($smsresult)){
+            return view('auth.code');
+        }else{
+            return back();
+        }
+    }
+
+    //UserCode
+    public function UserCode(Request $request){
+        if(!empty($request['code'])){
+            $user = User::where('code',$request['code'])->count();
+            if($user > 0){
+                return redirect('/checkout-form');
+            }else{
+                return back();
+            }
+        }else{
+            return back();
+        }
+    }
+
+    //CheckOutForm
+    public function CheckOutForm(){
+        return view('Frontend.cart.checkout_form');
+    }
+
+
+
+
+
 }

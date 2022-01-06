@@ -245,6 +245,32 @@ $(document).on("click",".activating",function () {
     })
 </script>
 
+<script>
+    $(document).on("click",".updateCouponStatus",function () {
+        var status = $(this).children("i").attr('status');
+        var coupon_id = $(this).attr('coupon_id');
+
+        $.ajax({
+            type:"post",
+            url:"/admin/coupon-status",
+            data:{status:status,coupon_id:coupon_id},
+            success:function(res){
+                if(res['status'] == 0){
+                    $("#coupon-"+coupon_id).html("<i class='fas fa-toggle-off' aria-hidden='true' status='Inactive'></i>");
+                }else if(res['status'] == 1){
+
+                    $("#coupon-"+coupon_id).html("<i class='fas fa-toggle-on' aria-hidden='true' status='Active'></i>");
+                }
+            },
+            error:function(){
+                alert("Error!");
+            }
+
+        });
+
+    })
+</script>
+
     <script>
         $(document).on("click",".updateSliderStatus",function () {
             var status = $(this).children("i").attr('status');

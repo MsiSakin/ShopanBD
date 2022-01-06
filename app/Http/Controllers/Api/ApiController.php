@@ -59,7 +59,7 @@ class ApiController extends Controller
 
     //sub category api
     public function SubCategory(){
-        $subcategory = Subcategory::with('Category')->where('status',1)->select('id','category_id','sub_category_name','sub_category_image')->get()->toArray();
+        $subcategory = Subcategory::with('Category')->where('status',1)->select('id','category_id','sub_category_name','sub_category_image')->paginate(15);
         if (!empty($subcategory)){
             return response()->json([
                 'data'=>$subcategory,
