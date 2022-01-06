@@ -36,7 +36,7 @@ class ApiController extends Controller
                 'status'=>true
             ],200);
         }
-       
+
 
 
     }
@@ -96,7 +96,11 @@ class ApiController extends Controller
     public function CustomerLogin(Request $request){
 
         $validation = Validator::make($request->all(),[
-            'phone' => 'required|min:11|unique:users',
+            'phone' => 'required|min:11',
+        ]);
+
+        $phoneValidation = Validator::make($request->all(),[
+            'phone' => 'unique:users',
         ]);
 
         if($validation->fails()){
@@ -106,46 +110,88 @@ class ApiController extends Controller
                 'status'=>false
             ],200);
         }else{
+            if($phoneValidation->fails()){
 
-            $customer = new User;
-            $code = rand(0, 9999);
+                $customer = User::where('phone',$request['phone'])->first();
+                $code = rand(0, 999999);
+                $customer->code = $code;
+                $customer->save();
 
-            $customer->phone = $request['phone'];
-            $customer->code = $code;
-            $customer->save();
+                $to = $request['phone'];
+                $token = "5fe395aac73568229b46318e68515658";
+                $message = "Hello Sir,  SopanBD OTP Is: ".$code;
 
-            $to = $request['phone'];
-            $token = "5fe395aac73568229b46318e68515658";
-            $message = "Hello Sir,  SopanBD OTP Is: ".$code;
-
-            $url = "http://api.greenweb.com.bd/api.php?json";
+                $url = "http://api.greenweb.com.bd/api.php?json";
 
 
-            $data= array(
-            'to'=>"$to",
-            'message'=>"$message",
-            'token'=>"$token"
-            ); // Add parameters in key value
-            $ch = curl_init(); // Initialize cURL
-            curl_setopt($ch, CURLOPT_URL,$url);
-            curl_setopt($ch, CURLOPT_ENCODING, '');
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            $smsresult = curl_exec($ch);
+                $data= array(
+                'to'=>"$to",
+                'message'=>"$message",
+                'token'=>"$token"
+                ); // Add parameters in key value
+                $ch = curl_init(); // Initialize cURL
+                curl_setopt($ch, CURLOPT_URL,$url);
+                curl_setopt($ch, CURLOPT_ENCODING, '');
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                $smsresult = curl_exec($ch);
 
-            //Result
+                //Result
 
-            if(isset($smsresult)){
-                return response()->json([
-                    'status'=> true,
-                    'message'=>"OTP Sent Successfully"
-                ],200);
+                if(isset($smsresult)){
+                    return response()->json([
+                        'status'=> true,
+                        'message'=>"OTP Sent Successfully"
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Invalid OTP"
+                    ],200);
+                }
             }else{
-                return response()->json([
-                    'status'=>false,
-                    'message'=>"Invalid OTP"
-                ],200);
+                $customer = new User;
+                $code = rand(0, 999999);
+
+                $customer->phone = $request['phone'];
+                $customer->code = $code;
+                $customer->save();
+
+                $to = $request['phone'];
+                $token = "5fe395aac73568229b46318e68515658";
+                $message = "Hello Sir,  SopanBD OTP Is: ".$code;
+
+                $url = "http://api.greenweb.com.bd/api.php?json";
+
+
+                $data= array(
+                'to'=>"$to",
+                'message'=>"$message",
+                'token'=>"$token"
+                ); // Add parameters in key value
+                $ch = curl_init(); // Initialize cURL
+                curl_setopt($ch, CURLOPT_URL,$url);
+                curl_setopt($ch, CURLOPT_ENCODING, '');
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                $smsresult = curl_exec($ch);
+
+                //Result
+
+                if(isset($smsresult)){
+                    return response()->json([
+                        'status'=> true,
+                        'message'=>"OTP Sent Successfully"
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Invalid OTP"
+                    ],200);
+                }
             }
+
+
         }
     }
 
@@ -154,7 +200,9 @@ class ApiController extends Controller
         if(!empty($request['code'])){
             $user = User::where('code',$request['code'])->count();
             if($user > 0){
-                $customers = User::where('code',$request['code'])->first();
+                $customers = User::where('code',$request['code'])->select('id','name','email','phone','image')->first();
+                $customers->status = 1;
+                $customers->save();
                 return response()->json([
                     'status'=> true,
                     'data'=> $customers
@@ -196,7 +244,7 @@ class ApiController extends Controller
      public function shopInfo($id){
         
         $shop = Shop::where('id',$id)->select('id','category_id','shop_name','shop_address','shop_description','banner','shop_phone','shop_status',)->first();
-           
+
 
         if (!empty($shop)){
             return response()->json([
@@ -215,7 +263,7 @@ class ApiController extends Controller
 
     //shop Slider info
     public function shopCoverImage($id){
-        
+
         $shopCover = ShopImage::select('id','shop_slider')->where('shop_id',$id)->get();
 
         if (!empty($shopCover)){
@@ -233,7 +281,7 @@ class ApiController extends Controller
     }
 
 
-    
+
 
 
     //shop cover upload
@@ -263,12 +311,14 @@ class ApiController extends Controller
                 'message' => 'file_uploaded',
             ], 200);
             }else{
-                
+
 
                 return response()->json([
                 'status'=>false,
                 'message' =>'invalid_file_format',
-                ], 200);  
+
+                ], 200);
+
             }
 
 
@@ -287,22 +337,23 @@ class ApiController extends Controller
              'banner' => 'required',
              'category_id' => 'required',
              'shop_description' => 'required',
-             
+
          ]);
 
          if($validation->fails()){
              $errors = $validation->errors();
              return response()->json([
                  'message'=>$errors,
-                 
+
                  'status'=>false
              ],200);
 
 
          } else{
-            
+
              if($request->banner){
-                $shop = Shop::where('id',$id)->first(); 
+                $shop = Shop::where('id',$id)->first();
+
                 if($shop){
                     unlink($shop->banner);
                  $banner = $request->file('banner');
@@ -310,8 +361,7 @@ class ApiController extends Controller
                  $directory2 = 'shopkeeper/images/shop/';
                  $banner->move($directory2, $bannerName);
                  $bannerUrl = $directory2.$bannerName;
-                
-                
+
                  $shop->shop_name = $request->shop_name;
                  $shop->category_id = $request->category_id;
                  $shop->shop_address = $request->shop_address;
@@ -319,10 +369,11 @@ class ApiController extends Controller
                  $shop->shop_description = $request->shop_description;
                  $shop->shop_phone = $request->shop_phone;
                  $shop->shop_status = $request->shop_status;
-                 
+
                  $shop->save();
-                
-              
+
+
+
                  if(!@empty($shop)){
                      return response()->json([
                          'message'=>'Shopkeeper Updated Successfully',
@@ -334,20 +385,24 @@ class ApiController extends Controller
                          'message'=>'Invalid Request!',
                          'status'=>false
                      ],200);
-                 }               
+
+                 }
+
             }else{
                 return response()->json([
                     'message'=>'Shop Not found!',
                     'status'=>false
                 ],200);
             }
+
                  
           }
+
 
         }
 
      }
-   
+
 
     //AddProduct
     public function AddProduct(Request $request){
@@ -432,8 +487,7 @@ class ApiController extends Controller
         
         $product = Product::where('id',$id)->select('id','sub_category_id','category_id','shop_id','product_name','price','image','discount','discounted_price','short_des','long_des','status')->first();
            
-
-        if (!empty($product)){
+     if (!empty($product)){
             return response()->json([
                 'data'=>$product,
                 'status'=>true
@@ -446,6 +500,88 @@ class ApiController extends Controller
             ],200);
         }
     }
+  
+    //SubcategoryWiseProduct
+    public function SubcategoryWiseProduct($sub_category_id){
+        $subcategory_wise_product = Product::where('sub_category_id',$sub_category_id)->where('status',1)->select('id','category_id','sub_category_id','shop_id','product_name','image','price','discount','discounted_price','short_des','long_des')->paginate(15);
+        if($subcategory_wise_product){
+            return response()->json([
+                'status'=> true,
+                "data"=>$subcategory_wise_product
+            ],200);
+        }else{
+            return response()->json([
+                'status'=> false,
+                'message'=>"Product Not Found"
+            ],200);
+        }
+    }
+
+    //ProductDetails
+    public function ProductDetails(){
+        $product_details = Product::latest()->select('id','category_id','sub_category_id','shop_id','product_name','image','price','discount','discounted_price','short_des','long_des')->where('status',1)->paginate(15);
+        if($product_details){
+            return response()->json([
+                'status'=> true,
+                "data"=>$product_details
+            ],200);
+        }else{
+            return response()->json([
+                'status'=> false,
+                'message'=>"Product Not Found"
+            ],200);
+        }
+    }
+
+    //CategoryWiseProduct
+    public function CategoryWiseProduct($category_id){
+        $category_wise_products = Product::where('category_id',$category_id)->where('status',1)->select('id','category_id','sub_category_id','shop_id','product_name','image','price','discount','discounted_price','short_des','long_des')->paginate(15);
+        if($category_wise_products){
+            return response()->json([
+                'status'=> true,
+                "data"=>$category_wise_products
+            ],200);
+        }else{
+            return response()->json([
+                'status'=> false,
+                'message'=>"Product Not Found"
+            ],200);
+        }
+    }
+
+    //ShopWiseProducts
+    public function ShopWiseProducts($shop_id){
+        $shop_wise_products = Product::where('shop_id',$shop_id)->where('status',1)->select('id','category_id','sub_category_id','shop_id','product_name','image','price','discount','discounted_price','short_des','long_des')->paginate(15);
+        if($shop_wise_products){
+            return response()->json([
+                'status'=> true,
+                "data"=>$shop_wise_products
+            ],200);
+        }else{
+            return response()->json([
+                'status'=> false,
+                'message'=>"Product Not Found"
+            ],200);
+        }
+    }
+
+    //SearchProduct
+    public function SearchProduct(Request $request){
+        $search = Product::where('product_name', 'LIKE', "%{$request['search_product']}%")->select('id','category_id','sub_category_id','shop_id','product_name','image','price','discount','discounted_price','short_des','long_des')->where('status',1)->paginate(15);
+        if($search){
+            return response()->json([
+                'status'=> true,
+                "data"=>$search
+            ],200);
+        }else{
+            return response()->json([
+                'status'=> false,
+                'message'=>"Product Not Found"
+            ],200);
+        }
+    }
+
+        
 
 
     //Specific Product Status

@@ -29,9 +29,9 @@ class CategoryController extends Controller
     //store category
     public function storeCategory(Request $request,$id){
 
-        $request->validate([
-            'category_name' => 'required|min:2|unique:categories,category_name',
-        ]);
+        // $request->validate([
+        //     'category_name' => 'min:2|unique:categories,category_name',
+        // ]);
 
         //image insert
         if(!empty($request['category_image'])){
@@ -49,14 +49,16 @@ class CategoryController extends Controller
 
         $category = Category::findOrFail($id);
 
-        unlink($category->category_image);
+
 
         $category->category_name = ucwords($request['category_name']);
         if(isset($imageUrl)){
+            // unlink($category->category_image);
             $category->category_image = $imageUrl;
         }
         $category->status = 1;
         $category->save();
+
         return redirect()->back()->with('message','Category Created Successfully');
 
     }
