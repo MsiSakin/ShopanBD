@@ -52,9 +52,15 @@ Route::prefix('admin')->middleware('theme:admin')->name('admin.')->group(functio
 
 
 
-//Admin Api Route
+//Shopkeeper Api
 Route::post('/shopkeeper-request',[AuthController::class,'store']);
-// Route::post('/shopkeeper-login',[ApiController::class,'login']);
+Route::get('/shopkeeper/shop-info/{id}',[ApiController::class,'shopInfo']);
+Route::post('/shopkeeper/shop-update/{id}',[ApiController::class,'shopUpdate']);
+Route::post('/shopkeeper/shop-cover-upload/{id}',[ApiController::class,'shopCover']);
+Route::get('/shopkeeper/shop-cover-image/{id}',[ApiController::class,'shopCoverImage']);
+Route::get('/all-shop',[ApiController::class,'allShop']);
+
+
 Route::get('/categories',[ApiController::class,'Category']);
 Route::get('/sub-categories',[ApiController::class,'SubCategory']);
 

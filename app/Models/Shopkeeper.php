@@ -25,6 +25,17 @@ class Shopkeeper extends Authenticatable
 
     ];
 
+    protected $appends = ['shopkeeper_image_path'];
+
+    public function getShopkeeperImagePathAttribute(){
+        return asset($this->image);
+    }
+
+
+    public function shops(){
+        return $this->hasMany(Shop::class,'shopkeeper_id');
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *

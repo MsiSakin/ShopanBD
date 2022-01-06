@@ -7,22 +7,20 @@ use App\Models\Category;
 use App\Models\Shop;
 use App\Models\Shopkeeper;
 use Carbon\Carbon;
-use GrahamCampbell\ResultType\Result;
 use Illuminate\Http\Request;
 
 class ShopkeeperController extends Controller
 {
     //Shopkeeper Request
     public function vendorList(){
-        $shopkeepers = Shopkeeper::where('status','0')->get();
+        $shopkeepers = Shopkeeper::where('status','0')->latest()->get();
         return view('shopkeeper.vendor_list',compact('shopkeepers'));
     }
 
      //Shopkeeper Request
      public function vendorDetails(){
         
-        $shops = Shop::with('shopkeepers')->where('shop_status',1)->get();
-        
+        $shops = Shop::with('shopkeepers')->get();       
         return view('shopkeeper.vendor_details',compact('shops'));
     }
 
@@ -77,9 +75,9 @@ class ShopkeeperController extends Controller
     }
 
     public function viewShop(Request $request,$id){
-        
-        // return $id;
-        $shop = Shop::findOrfail($id);
+       
+        $shop = Shop::with('category','shop_image')->findOrfail($id);
+       
        return response()->json([
         'shop' =>$shop,
        ],200);
