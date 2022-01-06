@@ -239,9 +239,9 @@ class ApiController extends Controller
 
 
 
-     //shop info
+     //shop info 
      public function shopInfo($id){
-
+        
         $shop = Shop::where('id',$id)->select('id','category_id','shop_name','shop_address','shop_description','banner','shop_phone','shop_status',)->first();
 
 
@@ -315,7 +315,9 @@ class ApiController extends Controller
                 return response()->json([
                 'status'=>false,
                 'message' =>'invalid_file_format',
+
                 ], 200);
+
             }
 
 
@@ -350,6 +352,7 @@ class ApiController extends Controller
 
              if($request->banner){
                 $shop = Shop::where('id',$id)->first();
+
                 if($shop){
                     unlink($shop->banner);
                  $banner = $request->file('banner');
@@ -357,7 +360,6 @@ class ApiController extends Controller
                  $directory2 = 'shopkeeper/images/shop/';
                  $banner->move($directory2, $bannerName);
                  $bannerUrl = $directory2.$bannerName;
-
 
                  $shop->shop_name = $request->shop_name;
                  $shop->category_id = $request->category_id;
@@ -368,6 +370,7 @@ class ApiController extends Controller
                  $shop->shop_status = $request->shop_status;
 
                  $shop->save();
+
 
 
                  if(!@empty($shop)){
@@ -381,7 +384,9 @@ class ApiController extends Controller
                          'message'=>'Invalid Request!',
                          'status'=>false
                      ],200);
+
                  }
+
             }else{
                 return response()->json([
                     'message'=>'Shop Not found!',
@@ -389,12 +394,7 @@ class ApiController extends Controller
                 ],200);
             }
 
-
-
          }
-
-
-
 
          }
 
