@@ -63,28 +63,87 @@ class AuthController extends Controller
             }
 
             $validation = FacadesValidator::make($request->all(),[
-
-                'phone' => 'min:11|unique:shopkeepers',
-                'password' => 'min:8',
-                'image' => 'required',
-                'shop_phone' => 'min:11|unique:shops',
-                'email' => 'email|unique:shopkeepers',
-                'shop_address' => 'required',
-                'banner' => 'required',
-                'category_id' => 'required',
+               
+             
+                
+                
+                
+               
+               
                 'shop_description' => 'required',
                 
             ]);
- 
-            if($validation->fails()){
-                $errors = $validation->errors();
+
+            if(empty($request['phone'])){
+                $error_message = "Please Add Phone Number!";
+            }
+
+            if(!empty($request['phone'])){
+                if ($request['phone'] < 11 || $request['phone'] > 11 ){
+                    $error_message = "Phone Number Length 11 Digit !";
+                }
+                $vendor_phone = Shopkeeper::where('phone',$request['phone'])->count();
+                if ($vendor_phone > 0){
+                    $error_message = "Phone already exits!";
+                }
+            }
+
+        
+            if(empty($request['password'])){
+                $error_message = "Please Add Password!";
+            }
+
+            if(!empty($request['password'])){
+                if($request['password']<8){
+                    $error_message = "Password Length Minimum 8 Digits!";
+                }           
+            }
+
+            if(!isset($request['image'])){
+                    $error_message = "Please insert Image!";          
+            }
+
+            if(!empty($request['email'])){
+                if(!filter_var($request['email'],FILTER_VALIDATE_EMAIL)){
+                    $error_message = "Please Enter VAlid Email!";  
+                }
+                $vendor_email = Shopkeeper::where('email',$request['email'])->count();
+                if ($vendor_email > 0){
+                    $error_message = "Email already exits!";
+                }
+            }
+
+            if(!empty($request['shop_phone'])){
+                if ($request['shop_phone'] < 11 || $request['shop_phone'] > 11 ){
+                    $error_message = "Shop Phone Number Length 11 Digit!";
+                }
+                $shop_phone = Shop::where('shop_phone',$request['shop_phone'])->count();
+                if ($shop_phone > 0){
+                    $error_message = "Shop Phone already exits!";
+                }
+            }
+
+            if(empty($request['shop_address'])){
+                $error_message = "Please Add Shop Address!";
+            }
+
+            if(!isset($request['banner'])){
+                $error_message = "Please insert shop profile image!";          
+            }
+
+            if(empty($request['category_id'])){
+                $error_message = "Please Select Shop Category!";
+            }
+
+            if(empty($request['shop_description'])){
+                $error_message = "Please add a shop description!";
+            }
+        
+            if (isset($error_message) && !empty($error_message)){
                 return response()->json([
-                    'message'=>$errors,
-                    
-                    'status'=>false
+                    "status"=>false,
+                    "message"=>$error_message,
                 ],200);
-
-
             } else{
                 if($request->image && $request->banner){
                     $image = $request->file('image');

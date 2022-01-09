@@ -58,6 +58,8 @@ Route::get('/shopkeeper/shop-info/{id}',[ApiController::class,'shopInfo']);
 Route::post('/shopkeeper/shop-update/{id}',[ApiController::class,'shopUpdate']);
 Route::post('/shopkeeper/shop-cover-upload/{id}',[ApiController::class,'shopCover']);
 Route::get('/shopkeeper/shop-cover-image/{id}',[ApiController::class,'shopCoverImage']); 
+Route::get('/shop-status/view/{id}',[ApiController::class,'shopStatus']);
+Route::post('/shop-status/update/{id}',[ApiController::class,'shopStatusUpdate']);
 Route::get('/all-shop',[ApiController::class,'allShop']);
 Route::get('/product-information/{id}',[ApiController::class,'productInfo']);
 Route::post('/product-information/update/{id}',[ApiController::class,'productInfoUpdate']);
@@ -70,6 +72,7 @@ Route::get('/delivery-man/image/{id}',[ApiController::class,'deliveryManImage'])
 Route::post('/delivery-man/image/update/{id}',[ApiController::class,'deliveryManImageUpdate']);
 Route::get('/delivery-man/information/{id}',[ApiController::class,'deliveryManInfo']);
 Route::post('/delivery-man/information-update/{id}',[ApiController::class,'deliveryManInfoUpdate']);
+Route::post('/delivery-man/change-password/{id}',[ApiController::class,'deliveryManChangePassword']);
 
 
 Route::get('/categories',[ApiController::class,'Category']);
