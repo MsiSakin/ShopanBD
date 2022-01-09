@@ -29,6 +29,9 @@ Route::get('/checkout',[HomeController::class,'Checkout']);
 Route::post('/user-login',[HomeController::class,'UserLogin']);
 Route::post('/user-code',[HomeController::class,'UserCode']);
 Route::get('/checkout-form',[HomeController::class,'CheckOutForm']);
+Route::get('/delivery-charge-cal',[HomeController::class,'DeliveryChargeCal']);
+Route::post('/order-place',[HomeController::class,'OrderPlace']);
+
 //admin panel
 Route::get('/home', function () {
     return view('home');

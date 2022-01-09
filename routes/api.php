@@ -72,6 +72,7 @@ Route::post('/verify-code',[ApiController::class,'VerifyCode']);
 Route::get('/subcategory-wise-products/{id}',[ApiController::class,'SubcategoryWiseProduct']);
 Route::get('/product-details',[ApiController::class,'ProductDetails']);
 Route::get('/category-wise-products/{category_id}',[ApiController::class,'CategoryWiseProduct']);
+Route::get('/category-wise-subcategory/{category_id}',[ApiController::class,'CategoryWiseSubcategory']);
 Route::get('/shop-wise-products/{shop_id}',[ApiController::class,'ShopWiseProducts']);
 Route::post('/search-products',[ApiController::class,'SearchProduct']);
 //Vendor Api Route

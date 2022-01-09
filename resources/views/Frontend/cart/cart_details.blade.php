@@ -92,7 +92,6 @@
 
                 <a href="{{ url('/checkout') }}" class="btn btn-info float-right">Checkout</a>
 
-
             </div>
       </div>
 </div>

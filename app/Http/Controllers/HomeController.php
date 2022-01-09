@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Category;
 use App\Models\Coupon;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\SetLocation;
 use App\Models\Shop;
 use App\Models\ShopImage;
 use App\Models\Slider;
@@ -168,53 +171,93 @@ class HomeController extends Controller
     }
 
 
-    // //Checkout login check
-    // public function Checkout(){
-    //     $user = User::all();
-    //     if(){
+    //Checkout login check
+    public function Checkout(){
 
-    //         return redirect('/checkout-form');
-    //     }else{
-    //         return redirect('/login');
-    //     }
-    // }
+        if(Auth::check()){
+            // return redirect('/checkout-form');
+        }else{
+            return redirect('/login');
+        }
+    }
 
     //UserLogin
     public function UserLogin(Request $request){
         $request->validate([
-            'phone' => 'required|min:11|unique:users',
+            'phone' => 'required|min:11',
         ]);
 
-        $customer = new User;
-        $code = rand(0, 999999);
+        //phone exits or not
+        $phone_exit_or_not = User::where('phone',$request['phone'])->count();
+        if($phone_exit_or_not == 1){
+            // return redirect('/checkout-form');
+            $customer = User::where('phone',$request['phone'])->first();
+            $code = rand(0, 999999);
 
-        $customer->phone = $request['phone'];
-        $customer->code = $code;
-        $customer->save();
+            $customer->phone = $request['phone'];
+            $customer->code = $code;
+            $customer->save();
 
-        $to = $request['phone'];
-        $token = "5fe395aac73568229b46318e68515658";
-        $message = "Hello Sir,  SopanBD OTP Is: ".$code;
+            //cart customer_id update
 
-        $url = "http://api.greenweb.com.bd/api.php?json";
+            $to = $request['phone'];
+            $token = "5fe395aac73568229b46318e68515658";
+            $message = "Hello Sir,  SopanBD OTP Is: ".$code;
+
+            $url = "http://api.greenweb.com.bd/api.php?json";
 
 
-        $data= array(
-        'to'=>"$to",
-        'message'=>"$message",
-        'token'=>"$token"
-        ); // Add parameters in key value
-        $ch = curl_init(); // Initialize cURL
-        curl_setopt($ch, CURLOPT_URL,$url);
-        curl_setopt($ch, CURLOPT_ENCODING, '');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $smsresult = curl_exec($ch);
+            $data= array(
+            'to'=>"$to",
+            'message'=>"$message",
+            'token'=>"$token"
+            ); // Add parameters in key value
+            $ch = curl_init(); // Initialize cURL
+            curl_setopt($ch, CURLOPT_URL,$url);
+            curl_setopt($ch, CURLOPT_ENCODING, '');
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $smsresult = curl_exec($ch);
 
-        if(isset($smsresult)){
-            return view('auth.code');
+            if(isset($smsresult)){
+                return view('auth.code');
+            }else{
+                return back();
+            }
         }else{
-            return back();
+            $customer = new User;
+            $code = rand(0, 999999);
+
+            $customer->phone = $request['phone'];
+            $customer->code = $code;
+            $customer->save();
+
+            //cart customer_id update
+
+            $to = $request['phone'];
+            $token = "5fe395aac73568229b46318e68515658";
+            $message = "Hello Sir,  SopanBD OTP Is: ".$code;
+
+            $url = "http://api.greenweb.com.bd/api.php?json";
+
+
+            $data= array(
+            'to'=>"$to",
+            'message'=>"$message",
+            'token'=>"$token"
+            ); // Add parameters in key value
+            $ch = curl_init(); // Initialize cURL
+            curl_setopt($ch, CURLOPT_URL,$url);
+            curl_setopt($ch, CURLOPT_ENCODING, '');
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $smsresult = curl_exec($ch);
+
+            if(isset($smsresult)){
+                return view('auth.code');
+            }else{
+                return back();
+            }
         }
     }
 
@@ -237,8 +280,76 @@ class HomeController extends Controller
         return view('Frontend.cart.checkout_form');
     }
 
+    //DeliveryChargeCal
+    public function DeliveryChargeCal(Request $request){
+
+        $Id = $request['Id'];
+        $sub_area_charge = SetLocation::where('id',$Id)->select('delivery_charge')->first();
+        $charge = $sub_area_charge['delivery_charge'];
+        $carts = Cart::select('shop_id')->distinct()->get()->count();
+        $val = ( $carts - 1 ) * 5;
+        $delivery_charge =  (int)$charge + $val;
+
+        $cart_sub_total = Cart::where('session_id',Session::get('session_id'))->sum('sub_total');
+
+        if(Session::get('coupon_session')){
+            $discount = $cart_sub_total * Session::get('coupon_session')['coupon_discount'] / 100;
+            $updated_price = $cart_sub_total - $discount;
+            $grand_total = $updated_price + $delivery_charge;
+        }else{
+            $updated_price = $cart_sub_total;
+            $grand_total = $updated_price + $delivery_charge;
+        }
+
+        Session::put('grand_total',$grand_total);
+        Session::put('delivery_charge',$delivery_charge);
+        return response()->json([
+            'grand_toal'=>$grand_total,
+            'delivery_charge'=>$delivery_charge
+        ],200);
+
+    }
 
 
+    //OrderPlace
+    public function OrderPlace(Request $request){
+        // return $request->all();
+        //validateion
+        $request->validate([
+            'phone' => 'required|min:11',
+            'address' => 'required|min:2',
+        ]);
+
+
+        //order
+        $order = new Order;
+        $order->customer_id = 0;
+        $order->session_id = Session::get('session_id');
+        $order->date = Carbon::now();
+        $order->total = $request['total'];
+        $order->grand_total = $request['grand_toal'];
+        $order->delivery_charge = $request['delivery_charge'];
+        $order->phone = $request['phone'];
+        $order->address = $request['address'];
+        $order->area_id = $request['area'];
+        $order->sub_area_id = $request['sub_area_id'];
+        $order->payment_type = $request['paymentMethod'];
+        $order->save();
+
+        //order items
+        $carts = Cart::with('product')->where('session_id',Session::get('session_id'))->get()->toArray();
+        foreach($carts as $cart){
+            $order_items = new OrderItem;
+            $order_items->order_id = $order->id;
+            $order_items->shop_id = $cart['shop_id'];
+            $order_items->product_id = $cart['product']['id'];
+            $order_items->quantity = $cart['quantity'];
+            $order_items->unit_cost = $cart['product']['price'];
+            $order_items->sub_total = $cart['sub_total'];
+            $order_items->save();
+        }
+
+    }
 
 
 }

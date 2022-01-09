@@ -36,8 +36,6 @@ class ApiController extends Controller
             ],200);
         }
 
-
-
     }
 
     //category api
@@ -70,6 +68,24 @@ class ApiController extends Controller
             return response()->json([
                 'status'=>false,
                 'message'=>"Sub Category Not Found"
+            ],200);
+        }
+    }
+
+
+    //CategoryWiseSubcategory
+    public function CategoryWiseSubcategory($category_id){
+        $sub_category = Subcategory::where('category_id',$category_id)->get()->toArray();
+        if (!empty($sub_category)){
+            return response()->json([
+                'data'=>$sub_category,
+                'status'=>true
+            ],200);
+
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Category Wise Sub Category Not Found"
             ],200);
         }
     }

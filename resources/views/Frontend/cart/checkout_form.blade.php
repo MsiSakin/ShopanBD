@@ -14,199 +14,129 @@
             <div class="col-md-4 order-md-2 mb-4">
               <h4 class="d-flex justify-content-between align-items-center mb-3">
                 <span class="text-muted">Your cart</span>
-                <span class="badge badge-secondary badge-pill">3</span>
+                @php
+                    $cart_count = \App\Models\Cart::where('session_id',Session::get('session_id'))->count();
+                    $cart_sub_total = \App\Models\Cart::where('session_id',Session::get('session_id'))->sum('sub_total');
+
+                @endphp
+                <span class="badge badge-secondary badge-pill">{{ $cart_count }}</span>
               </h4>
               <ul class="list-group mb-3">
                 <li class="list-group-item d-flex justify-content-between lh-condensed">
                   <div>
                     <h6 class="my-0">Total</h6>
-                    <small class="text-muted">Brief description</small>
                   </div>
-                  <span class="text-muted">$2450</span>
+                  @if(Session::get('coupon_session'))
+                     @php
+                        $discount = $cart_sub_total * Session::get('coupon_session')['coupon_discount'] / 100;
+                        $updated_price = $cart_sub_total - $discount;
+                     @endphp
+                    <span class="text-muted">৳{{ $updated_price }}</span>
+                  @else
+                    <span class="text-muted">৳{{ $cart = \App\Models\Cart::where('session_id',Session::get('session_id'))->sum('sub_total') }}</span>
+                  @endif
+
                 </li>
 
                 <li class="list-group-item d-flex justify-content-between lh-condensed">
                   <div>
                     <h6 class="my-0">Delivery charge</h6>
-                    <small class="text-muted">Brief description</small>
                   </div>
-                  <span class="text-muted">$30</span>
+                  <span id="append_charge" class="text-muted">৳00</span>
                 </li>
-                <li class="list-group-item d-flex justify-content-between bg-light">
-                  <div class="text-success">
-                    <h6 class="my-0">Promo code</h6>
-                    <small>EXAMPLECODE</small>
-                  </div>
-                  <span class="text-success">-$0</span>
-                </li>
+
                 <li class="list-group-item d-flex justify-content-between">
                   <span>Total </span>
-                  <strong>$2480</strong>
+                  @if(Session::get('coupon_session'))
+                    <strong id="grand_total">৳{{ $updated_price }}</strong>
+                  @else
+                    <strong id="grand_total">৳{{ $cart }}</strong>
+                  @endif
                 </li>
               </ul>
 
-              <form class="card p-2">
-                <div class="input-group">
-                  <input type="text" class="form-control" placeholder="Promo code">
-                  <div class="input-group-append">
-                    <button type="submit" class="btn btn-secondary">Redeem</button>
-                  </div>
-                </div>
-              </form>
             </div>
             <div class="col-md-8 order-md-1">
+                {{--custom validation--}}
+                <div class="col-lg-12">
+                    <div class="col-lg-1"></div>
+                    <div class="col-lg-12">
+                        @if ($errors->any())
+                            <div class="alert alert-danger" style="margin-top:20px">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                    </div>
+                    <div class="col-lg-1"></div>
+                </div>
               <h4 class="mb-3">Billing address</h4>
-              <form class="needs-validation" novalidate>
-                <!-- <div class="row">
-                  <div class="col-md-6 mb-3">
-                    <label for="firstName">First name</label>
-                    <input type="text" class="form-control" id="firstName" placeholder="" value="" required>
-                    <div class="invalid-feedback">
-                      Valid first name is required.
-                    </div>
-                  </div>
-                  <div class="col-md-6 mb-3">
-                    <label for="lastName">Last name</label>
-                    <input type="text" class="form-control" id="lastName" placeholder="" value="" required>
-                    <div class="invalid-feedback">
-                      Valid last name is required.
-                    </div>
-                  </div>
-                </div> -->
-
-                <!-- <div class="mb-3">
-                  <label for="username">Username</label>
-                  <div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text">@</span>
-                    </div>
-                    <input type="text" class="form-control" id="username" placeholder="Username" required>
-                    <div class="invalid-feedback" style="width: 100%;">
-                      Your username is required.
-                    </div>
-                  </div>
-                </div> -->
-
+              <form action="{{ url('/order-place') }}" method="post" class="needs-validation">
+                @csrf
                 <div class="mb-3">
-                  <label for="email">Phone <span class="text-muted">(*)</span></label>
-                  <input type="text" class="form-control" id="phone" placeholder="+8801768547123">
-                  <div class="invalid-feedback">
-                    Please enter a valid phone number for shipping updates.
-                  </div>
+                  <label for="Phone">Phone</label>
+                  <input type="number" class="form-control" name="phone" placeholder="Enter Your Phone Number" required>
                 </div>
 
-                <!-- <div class="mb-3">
-                  <label for="email">Email <span class="text-muted">(Optional)</span></label>
-                  <input type="email" class="form-control" id="email" placeholder="you@example.com">
-                  <div class="invalid-feedback">
-                    Please enter a valid email address for shipping updates.
-                  </div>
-                </div> -->
 
                 <div class="mb-3">
                   <label for="address">Address</label>
-                  <input type="text" class="form-control" id="address" placeholder="1234 Main St" required>
-                  <div class="invalid-feedback">
-                    Please enter your shipping address.
-                  </div>
+                  <input type="text" class="form-control" name="address" placeholder="Enter Your Address" required>
                 </div>
 
-                <!-- <div class="mb-3">
-                  <label for="address2">Address 2 <span class="text-muted">(Optional)</span></label>
-                  <input type="text" class="form-control" id="address2" placeholder="Apartment or suite">
-                </div> -->
 
                 <div class="row">
                   <div class="col-md-5 mb-3">
-                    <label for="country">Area</label>
-                    <select class="custom-select d-block w-100" id="country" required>
+                    <label for="Area">Area</label>
+                    <select class="custom-select d-block w-100" id="area" name="area" required>
                       <option value="">Choose...</option>
-                      <option>sitakundo</option>
-                      <option>veramara</option>
+                      @php
+                          $area = \App\Models\Area::latest()->get()->toArray();
+                      @endphp
+                      @foreach ($area as $row)
+                        <option value="{{ $row['id'] }}">{{ $row['area_name'] }}</option>
+                      @endforeach
+
                     </select>
-                    <div class="invalid-feedback">
-                      Please select a valid country.
-                    </div>
                   </div>
                   <div class="col-md-4 mb-3">
                     <label for="state">Sub-area</label>
-                    <select class="custom-select d-block w-100" id="state" required>
+                      @php
+                          $SetLocation = \App\Models\SetLocation::latest()->get()->toArray();
+                      @endphp
+                    <select id="sub_area" name="sub_area_id" class="custom-select d-block w-100" id="state" required>
                       <option value="">Choose...</option>
-                      <option>Bazar</option>
-                      <option>khelar-math</option>
+
+                      @foreach ($SetLocation as $row)
+                        <option value="{{ $row['id'] }}">{{ $row['sub_area_name'] }}</option>
+                      @endforeach
                     </select>
-                    <div class="invalid-feedback">
-                      Please provide a valid state.
-                    </div>
                   </div>
-                  <!-- <div class="col-md-3 mb-3">
-                    <label for="zip">Zip</label>
-                    <input type="text" class="form-control" id="zip" placeholder="" required>
-                    <div class="invalid-feedback">
-                      Zip code required.
-                    </div>
-                  </div> -->
                 </div>
-                <!-- <hr class="mb-4"> -->
-                <!-- <div class="custom-control custom-checkbox">
-                  <input type="checkbox" class="custom-control-input" id="same-address">
-                  <label class="custom-control-label" for="same-address">Shipping address is the same as my billing address</label>
-                </div> -->
-                <!-- <div class="custom-control custom-checkbox">
-                  <input type="checkbox" class="custom-control-input" id="save-info">
-                  <label class="custom-control-label" for="save-info">Save this information for next time</label>
-                </div> -->
-                <!-- <hr class="mb-4"> -->
+
 
                 <h4 class="mb-3">Payment</h4>
-
                 <div class="d-block my-3">
                   <div class="custom-control custom-radio">
                     <input id="cashon" name="paymentMethod" type="radio" class="custom-control-input" checked required>
                     <label class="custom-control-label" for="cashon">Cash on Delivery</label>
                   </div>
-                  <!-- <div class="custom-control custom-radio">
-                    <input id="debit" name="paymentMethod" type="radio" class="custom-control-input" required>
-                    <label class="custom-control-label" for="debit">Debit card</label>
-                  </div>
-                  <div class="custom-control custom-radio">
-                    <input id="paypal" name="paymentMethod" type="radio" class="custom-control-input" required>
-                    <label class="custom-control-label" for="paypal">PayPal</label>
-                  </div> -->
                 </div>
-                <!-- <div class="row">
-                  <div class="col-md-6 mb-3">
-                    <label for="cc-name">Name on card</label>
-                    <input type="text" class="form-control" id="cc-name" placeholder="" required>
-                    <small class="text-muted">Full name as displayed on card</small>
-                    <div class="invalid-feedback">
-                      Name on card is required
-                    </div>
-                  </div>
-                  <div class="col-md-6 mb-3">
-                    <label for="cc-number">Credit card number</label>
-                    <input type="text" class="form-control" id="cc-number" placeholder="" required>
-                    <div class="invalid-feedback">
-                      Credit card number is required
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-3 mb-3">
-                    <label for="cc-expiration">Expiration</label>
-                    <input type="text" class="form-control" id="cc-expiration" placeholder="" required>
-                    <div class="invalid-feedback">
-                      Expiration date required
-                    </div>
-                  </div>
-                  <div class="col-md-3 mb-3">
-                    <label for="cc-cvv">CVV</label>
-                    <input type="text" class="form-control" id="cc-cvv" placeholder="" required>
-                    <div class="invalid-feedback">
-                      Security code required
-                    </div>
-                  </div>
-                </div> -->
+
+                @if(Session::get('coupon_session'))
+                    <input type="hidden" name="total" value="{{ $updated_price }}">
+                    <input type="hidden" id="gran_total" name="grand_toal" value="">
+                    <input type="hidden" id="del_charge" name="delivery_charge" >
+                @else
+                   <input type="hidden" name="total" value="{{ $cart }}">
+                   <input type="hidden" id="gran_total" name="grand_toal" value="">
+                   <input type="hidden" id="del_charge" name="delivery_charge" value="">
+                    {{--  <strong id="grand_total">৳{{ $cart }}</strong>  --}}
+                @endif
+
                 <hr class="mb-4">
                 <button class="btn btn-primary btn-lg btn-block mb-5" type="submit">Continue to checkout</button>
               </form>

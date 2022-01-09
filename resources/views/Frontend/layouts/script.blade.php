@@ -67,3 +67,30 @@
         });
     });
 </script>
+
+//custom script
+<script>
+    $(document).ready(function(){
+        $("#sub_area").on('change',function(){
+            var Id = $("#sub_area option:selected").val();
+
+            $.ajax({
+                type:"get",
+                url:"/delivery-charge-cal",
+                data: {Id:Id},
+                success:function(res){
+
+                    $('#append_charge').html(res['delivery_charge']);
+                    $('#grand_total').html(res['grand_toal']);
+                    document.getElementById("del_charge").value = res['delivery_charge'];
+                    document.getElementById("gran_total").value = res['grand_toal'];
+
+                },
+                error:function(){
+                    alert(!Error);
+                }
+            })
+        });
+    });
+</script>
+

@@ -71,9 +71,9 @@
             <div class="card h-100 ">
                 <img width="310px" height="163px" src="{{ asset($product['image']) }}" class="card-img-top" alt="...">
                 <div class="card-body">
-                <h5 class="card-title">{{ $product['product_name'] }}</h5>
-                <h6 class="card-title">Price: ${{ $product['price'] }}</h6>
-                <h6 class="card-title">Shop: {{ $product['shop']['shop_name'] }}</h6>
+                <h5 class="card-title">{{ $product['product_name'] ?? "" }}</h5>
+                <h6 class="card-title">Price: ${{ $product['price'] ?? "" }}</h6>
+                <h6 class="card-title">Shop: {{ $product['shop']['shop_name'] ?? ""}}</h6>
                 <a href="{{ url('/cart/'.$product['id']) }}" class="btn btn-info"><i class="fas fa-cart-plus"></i> Add to cart</a>
                 </div>
             </div>
