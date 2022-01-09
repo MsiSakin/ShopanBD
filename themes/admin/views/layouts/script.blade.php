@@ -32,7 +32,6 @@
 <script src="/themes/admin/dist/js/demo.js"></script>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <script src="/themes/admin/dist/js/pages/dashboard.js"></script>
-
 {{--data table--}}
 <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
@@ -235,6 +234,32 @@ $(document).on("click",".activating",function () {
                 }else if(res['status'] == 1){
 
                     $("#subcategory-"+subcategory_id).html("<i class='fas fa-toggle-on' aria-hidden='true' status='Active'></i>");
+                }
+            },
+            error:function(){
+                alert("Error!");
+            }
+
+        });
+
+    })
+</script>
+
+<script>
+    $(document).on("click",".updateCouponStatus",function () {
+        var status = $(this).children("i").attr('status');
+        var coupon_id = $(this).attr('coupon_id');
+
+        $.ajax({
+            type:"post",
+            url:"/admin/coupon-status",
+            data:{status:status,coupon_id:coupon_id},
+            success:function(res){
+                if(res['status'] == 0){
+                    $("#coupon-"+coupon_id).html("<i class='fas fa-toggle-off' aria-hidden='true' status='Inactive'></i>");
+                }else if(res['status'] == 1){
+
+                    $("#coupon-"+coupon_id).html("<i class='fas fa-toggle-on' aria-hidden='true' status='Active'></i>");
                 }
             },
             error:function(){
