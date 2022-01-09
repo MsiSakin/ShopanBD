@@ -89,23 +89,32 @@ class ApiController extends Controller
             return response()->json([
                 'status'=>false,
                 'message'=>"Slider Not Found"
-            ],204);
+            ],200);
         }
     }
 
     public function CustomerLogin(Request $request){
+         
+         //check phone length or not
+         if(!isset($request['phone']) < 11 || $request['phone'] > 11){        
+                $error_message = "Phone Number Length 11 Digit!";
+         }
 
-        $validation = Validator::make($request->all(),[
-            'phone' => 'required|min:11|unique:users',
-        ]);
+          //check Phone exits or not
+          if(isset($request['phone'])){
+            $customer_phone = User::where('phone',$request['phone'])->count();
+            if ($customer_phone > 0){
+                $error_message = "Phone already exits!";
+            }
+        }
 
-        if($validation->fails()){
-            $errors = $validation->errors();
+        if (isset($error_message) && !empty($error_message)){
             return response()->json([
-                'message'=>$errors,
-                'status'=>false
+                "status"=>false,
+                "message"=>$error_message,
             ],200);
-        }else{
+        }
+        else{
 
             $customer = new User;
             $code = rand(0, 9999);
@@ -195,7 +204,7 @@ class ApiController extends Controller
      //shop info 
      public function shopInfo($id){
         
-        $shop = Shop::where('id',$id)->select('id','category_id','shop_name','shop_address','shop_description','banner','shop_phone','shop_status',)->first();
+        $shop = Shop::with('category')->where('id',$id)->select('id','category_id','shop_name','shop_address','shop_description','banner','shop_phone','shop_status')->first();
            
 
         if (!empty($shop)){
@@ -280,97 +289,160 @@ class ApiController extends Controller
      public function shopUpdate(Request $request, $id)
      {
 
-         $validation = Validator::make($request->all(),[
-            'shop_name' => 'required',
-             'shop_phone' => 'min:11',
-             'shop_address' => 'required',
-             'banner' => 'required',
-             'category_id' => 'required',
-             'shop_description' => 'required',
-             
-         ]);
-
-         if($validation->fails()){
-             $errors = $validation->errors();
-             return response()->json([
-                 'message'=>$errors,
-                 
-                 'status'=>false
-             ],200);
-
-
-         } else{
-            
-             if($request->banner){
-                $shop = Shop::where('id',$id)->first(); 
-                if($shop){
-                    unlink($shop->banner);
-                 $banner = $request->file('banner');
-                 $bannerName = uniqid().'.'.$banner->extension();
-                 $directory2 = 'shopkeeper/images/shop/';
-                 $banner->move($directory2, $bannerName);
-                 $bannerUrl = $directory2.$bannerName;
-                
-                
-                 $shop->shop_name = $request->shop_name;
-                 $shop->category_id = $request->category_id;
-                 $shop->shop_address = $request->shop_address;
-                 $shop->banner = $bannerUrl;
-                 $shop->shop_description = $request->shop_description;
-                 $shop->shop_phone = $request->shop_phone;
-                 $shop->shop_status = $request->shop_status;
-                 
-                 $shop->save();
-                
-              
-                 if(!@empty($shop)){
-                     return response()->json([
-                         'message'=>'Shopkeeper Updated Successfully',
-                         'status'=>true
-
-                     ],200);
-                 }else{
-                     return response()->json([
-                         'message'=>'Invalid Request!',
-                         'status'=>false
-                     ],200);
-                 }               
+        $shop = Shop::where('id',$id)->first(); 
+        if($shop){
+            if(!empty($request['shop_name'])){
+                $shop->shop_name = $request->shop_name;
+            }
+    
+            if(!empty($request['category_id'])){
+                $shop->category_id = $request->category_id;
+            }
+    
+    
+            if(!empty($request['shop_address'])){
+                $shop->shop_address = $request->shop_address;
+            }
+    
+            if(!empty($request['shop_phone'])){
+                if($request['phone'] < 11 || $request['phone'] > 11){
+                    return response()->json([
+                        'message'=>'Phone Number Length 11 Digits',
+                        'status'=>false
+        
+                    ],200);
+                }
+                $shop->shop_phone = $request->shop_phone;
+            }
+    
+            if(isset($request['banner'])){
+                     unlink($shop->banner);
+                     $banner = $request->file('banner');
+                     $bannerName = uniqid().'.'.$banner->extension();
+                     $directory2 = 'shopkeeper/images/shop/';
+                     $banner->move($directory2, $bannerName);
+                     $bannerUrl = $directory2.$bannerName;
+    
+                     $shop->banner = $bannerUrl;
+            }
+    
+            if(!empty($request['shop_description'])){
+                $shop->shop_description = $request->shop_description;
+            }
+    
+            $shop->save();
+    
+            if(!@empty($shop)){
+                return response()->json([
+                    'message'=>'Shop Updated Successfully',
+                    'status'=>true
+    
+                ],200);
             }else{
                 return response()->json([
-                    'message'=>'Shop Not found!',
+                    'message'=>'Invalid Request!',
                     'status'=>false
                 ],200);
-            }
-                 
-          }
+            }   
+        }else{
+            return response()->json([
+                'message'=>'Shop Not Found!',
+                'status'=>false
+            ],200);
+            }      
 
+    }
+
+
+        //Specific Shop Status
+        public function shopStatus($id){
+        
+            $shop = Shop::where('id',$id)->select('id','shop_status','banner')->first();
+               
+            
+            if (!empty($shop)){
+                return response()->json([
+                    'data'=>$shop,
+                    'status'=>true
+                ],200);
+    
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Shop Not Found!"
+                ],200);
+            }
+        }
+    
+    
+    
+         //Specific Shop Status Update
+         public function shopStatusUpdate(Request $request,$id){
+            
+            $shop = Shop::where('id',$id)->first();
+               
+    
+            if (!empty($shop)){
+                $shop->shop_status = $request->shop_status;
+                $shop->save();
+                return response()->json([
+                    'message' => 'Shop Status Updated Successfully',
+                    'status'=>true
+                ],200);
+    
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Shop Not Found!"
+                ],200);
+            }
         }
 
-     }
-   
+
 
     //AddProduct
     public function AddProduct(Request $request){
-        $validation = Validator::make($request->all(),[
-            'category_id' => 'required',
-            'sub_category_id' => 'required',
-            'product_name' => 'required|min:2|max:150',
-            'product_image' => 'required',
-            'short_des' => 'required',
-            'long_des' => 'required',
-            'price' => 'required',
-            'shop_id' => 'required'
-        ]);
 
-        if($validation->fails()){
-            $errors = $validation->errors();
-            return response()->json([
-                'message'=>$errors,
-                'status'=>false
-            ],200);
-        }else{
+    if(empty($request['category_id'])){
+        $error_message = "Please Add Category Name!";
+    }
 
+    if(empty($request['product_name'])){
+        $error_message = "Please Add Product Name!";
+    }
 
+    if(empty($request['sub_category_id'])){
+        $error_message = "Please Add Sub Category!";
+    }
+
+    if(!isset($request['product_image'])){
+        $error_message = "Please Add Product Image!";
+    }
+
+    if(empty($request['short_des'])){
+        $error_message = "Please Add Product Short Description!";
+    }
+
+    if(empty($request['long_des'])){
+        $error_message = "Please Add Product Long Description!";
+    }
+
+    if(empty($request['price'])){
+        $error_message = "Please Add Product Price!";
+    }
+
+    if(empty($request['shop_id'])){
+        $error_message = "Please Add Shop Name!";
+    }
+
+     if (isset($error_message) && !empty($error_message)){
+        return response()->json([
+            "status"=>false,
+            "message"=>$error_message,
+        ],200);
+    }
+  
+    else{
              //image insert
         if(!empty($request['product_image'])){
             $image = $request->file('product_image');
@@ -430,7 +502,7 @@ class ApiController extends Controller
      //Specific Product information
      public function productInfo($id){
         
-        $product = Product::where('id',$id)->select('id','sub_category_id','category_id','shop_id','product_name','price','image','discount','discounted_price','short_des','long_des','status')->first();
+        $product = Product::with('shop','category')->where('id',$id)->select('id','sub_category_id','category_id','shop_id','product_name','price','image','discount','discounted_price','short_des','long_des','status')->first();
            
 
         if (!empty($product)){
@@ -478,6 +550,7 @@ class ApiController extends Controller
 
         if (!empty($product)){
             $product->status = $request->status;
+            $product->save();
             return response()->json([
                 'message' => 'Product Status Updated Successfully',
                 'status'=>true
@@ -497,79 +570,76 @@ class ApiController extends Controller
      public function productInfoUpdate(Request $request, $id)
      {
 
-         $validation = Validator::make($request->all(),[
-             'product_name' => 'required|min:2|max:50',
-             'price' => 'required',
-             'image' => 'required',
-             'category_id' => 'required',
-             'sub_category_id' => 'required',
-             'discount' => 'required',
-             'discounted_price' => 'required',
-             'short_des' => 'required',
-             'long_des' => 'required',
-             
-         ]);
+    $product = Product::where('id',$id)->first(); 
+    
+    if(!empty($request['category_id'])){
+        $product->category_id = $request->category_id;
+    }
 
-         if($validation->fails()){
-             $errors = $validation->errors();
-             return response()->json([
-                 'message'=>$errors,
-                 
-                 'status'=>false
-             ],200);
-         } else{
-            
-             if($request->image){
-                $product = Product::where('id',$id)->first(); 
-                if($product){
-                    unlink($product->image);
-                 $image = $request->file('image');
-                 $imageName = uniqid().'.'.$image->extension();
-                 $directory = 'category/images/product_image/';
-                 $image->move($directory, $imageName);
-                 $imageUrl = $directory.$imageName;
-                            
-                 $product->product_name = $request->product_name;
-                 $product->category_id = $request->category_id;
-                 $product->sub_category_id = $request->sub_category_id;
-                 $product->image = $imageUrl;
-                 $product->price = $request->price;
-                 $product->discount = $request->discount;
-                 $product->discounted_price = $request->discounted_price;
-                 $product->short_des = $request->short_des;
-                 $product->long_des = $request->long_des;
-                 $product->save();
-                
-              
-                 if(!@empty($product)){
-                     return response()->json([
-                         'message'=>'Product Updated Successfully',
-                         'status'=>true
+    if(!empty($request['product_name'])){
+        $product->product_name = $request->product_name;
+    }
 
-                     ],200);
-                 }else{
-                     return response()->json([
-                         'message'=>'Invalid Request!',
-                         'status'=>false
-                     ],200);
-                 }               
-            }else{
-                return response()->json([
-                    'message'=>'Product Not found!',
-                    'status'=>false
-                ],200);
-            }
-                  
-          }
+    if(!empty($request['price'])){
+        $product->price = $request->price;
+    }
 
-        }
+    if(!empty($request['sub_category_id'])){
+        $product->sub_category_id = $request->sub_category_id;
+    }
 
-     }
+    if(isset($request['product_image'])){
+        unlink($product->image);
+        $image = $request->file('product_image');
+        $imageName = uniqid().'.'.$image->extension();
+        $directory = 'category/images/product_image/';
+        $image->move($directory, $imageName);
+        $imageUrl = $directory.$imageName;
+        $product->image = $imageUrl;
+    }
+
+    if(!empty($request['short_des'])){
+        $product->short_des = $request->short_des;
+    }
+
+    if(!empty($request['long_des'])){
+        $product->long_des = $request->long_des;
+    }
+
+    if(!empty($request['discount'])){
+        $product->discount = $request->discount;
+    }
+
+    if(empty($request['discounted_price'])){
+        $product->discounted_price = $request->discounted_price;
+    }
+
+    $product->save();
+
+    if(!@empty($product)){
+        return response()->json([
+            'message'=>'Product Updated Successfully',
+            'status'=>true
+
+        ],200);
+    }else{
+        return response()->json([
+            'message'=>'Invalid Request!',
+            'status'=>false
+        ],200);
+        }   
+    }
    
 
      //Delivery Man Login
      public function deliveryManLogin(Request $request){
         $delMan = DeliveryMan::where('phone',$request['phone'])->first();
+        if(@empty($delMan)){
+            return response()->json([
+                   'status'=>false,
+                   'message'=>'Delivery man not found!'
+               ],200);
+       }
         $pass = Hash::check($request['password'], $delMan['password']);
         if(@empty($request->phone) || @empty($request->password)){
 
@@ -675,7 +745,7 @@ class ApiController extends Controller
 
      //Delivery Man Information View
      public function deliveryManInfo($id){
-        $deliveryMan = DeliveryMan::where('id',$id)->select('id','name','phone','document_image','document_no','address')->first();
+        $deliveryMan = DeliveryMan::where('id',$id)->select('id','name','image','phone','document_image','document_no','address')->first();
        
         if($deliveryMan){
             return response()->json([
@@ -697,85 +767,95 @@ class ApiController extends Controller
         public function deliveryManInfoUpdate(Request $request,$id){
             $deliveryMan = DeliveryMan::where('id',$id)->first();
             if($deliveryMan){
-                $validation = Validator::make($request->all(),[
-                    'name' => 'required|min:2|max:50',
-                    'password' => 'required|min:8',
-                    'phone' => 'required|min:8',    
-                    'address' => 'required', 
-                ]);
-                if($validation->fails()){
-                    $errors = $validation->errors();
-                    return response()->json([
-                        'message'=>$errors,
-                        
-                        'status'=>false
-                    ],200);
-                }else{
-                    if($request->document_image){
-                        if($deliveryMan->document_image){
-                            unlink($deliveryMan->document_image);
-                        }           
-                     $docImage = $request->file('document_image');
+
+                if(!empty($request['name'])){
+                    $deliveryMan->name = $request->name;  
+                }
+            
+                if(!empty($request['address'])){
+                    $deliveryMan->address = $request->address;  
+                }
+            
+                if(!empty($request['phone'])){
+                    if($request['phone'] < 11 || $request['phone'] > 11 ){
+                        return response()->json([
+                            "status"=>false,
+                            "message"=>'Phone Length 11 Digits!',
+                        ],200);
+                    }else{
+                        $deliveryMan->phone = $request->phone; 
+                    }
+                }
+
+                if($request->document_image){
+                    if($deliveryMan->document_image){
+                        unlink($deliveryMan->document_image);
+                    } 
+                    $docImage = $request->file('document_image');
                      $docImageName = uniqid().'.'.$docImage->extension();
                      $directory = 'delivery/images/documents/';
                      $docImage->move($directory, $docImageName);
                      $docImageUrl = $directory.$docImageName;
-                    
-                    
-                     $deliveryMan->name = $request->name;                   
-                     $deliveryMan->address = $request->address;
+
                      $deliveryMan->document_image = $docImageUrl;
-                     $deliveryMan->document_no = $request->document_no;
-                     $deliveryMan->phone = $request->phone;
-                     if($request->password){
-                        $deliveryMan->password = Hash::make($request->password); 
-                     }                                      
-                     $deliveryMan->save();
-                     if($deliveryMan){
-                        return response()->json([
-                            'message'=>'Delivery Man Updated Successfully',
-                            'status'=>true
-      
-                        ],200);
-                    }else{
-                        return response()->json([
-                            'message'=>'Invalid Request!',
-                            'status'=>false
-                        ],200);
-                    } 
-                    }else{
-                        if($deliveryMan->document_image){
-                            unlink($deliveryMan->document_image);
-                        }
-                     $deliveryMan->name = $request->name;                   
-                     $deliveryMan->address = $request->address;
-                     $deliveryMan->document_no = $request->document_no;
-                     $deliveryMan->phone = $request->phone;
-                     if($request->password){
-                        $deliveryMan->password = Hash::make($request->password); 
-                     }                                      
-                     $deliveryMan->save();
-                     if($deliveryMan){
-                        return response()->json([
-                            'message'=>'Delivery Man Updated Successfully',
-                            'status'=>true
-      
-                        ],200);
-                    }else{
-                        return response()->json([
-                            'message'=>'Invalid Request!',
-                            'status'=>false
-                        ],200);
-                    } 
-
-                    }
                 }
+                                       
+                $deliveryMan->save();
+                if($deliveryMan){
+                return response()->json([
+                    'message'=>'Delivery Man Updated Successfully',
+                    'status'=>true
 
+                ],200);
+                }else{
+                    return response()->json([
+                        'message'=>'Invalid Request!',
+                        'status'=>false
+                    ],200);
+                }            
             }else{
                 return response()->json([
-                    'message'=>'Delivery Man Not found!',
+                    'message'=>'Delivery Man Not Found!',
                     'status'=>false
                 ],200);
+            } 
+        }
+
+        //Delivery Man Password Change 
+        public function deliveryManChangePassword(Request $request,$id){
+           
+            $password = $request->password;
+            if($password < 8){
+                return response()->json([
+                    'message'=>'Password length : minimum 8',
+                    'status'=>false
+                ],200);
+            }else{
+                $delMan = DeliveryMan::where('id',$id)->first();
+                if($delMan){
+                    $delMan->password = Hash::make($password);
+                    $delMan->save();
+
+                    if($delMan){
+                        return response()->json([
+                            'message'=>'Password Changed Successfully',
+                            'status'=>true
+    
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'message'=>'Invalid Request!',
+                            'status'=>false
+                        ],200);
+                    } 
+                }else{
+                    return response()->json([
+                        'message'=>'Delivery Man Not Found!',
+                        'status'=>false
+                    ],200);
+                } 
+                
+
             }
         }
 

@@ -18,7 +18,7 @@
                <a href="{{ $category['1']['id'] }}">
                  <img style="width: 100%;height: 250px;border-radius:20px; border:1px solid rgb(233, 231, 231)" src="{{ asset($category['1']['category_image'] ?? "") }}" alt="Category Image">
                <div class="card-img-overlay">
-                 <button class="btn btn-info"><h3>{{ $category['1']['category_name'] }}</h3></button>
+                 <button class="btn btn-info"><h3>{{ $category['1']['category_name'] ?? "" }}</h3></button>
                </div>
                </a>
              </div>
@@ -28,7 +28,7 @@
                  <img style="width: 100%;height: 250px;border-radius:20px;" src="{{ asset($category['2']['category_image'] ?? "") }}" alt="Category Image">
                <div class="card-img-overlay">
                  <!-- <h1 class="card-title text-white categories-title">Medicine</h1>   -->
-                 <button class="btn btn-info"><h3>{{ $category['2']['category_name'] }}</h3></button>
+                 <button class="btn btn-info"><h3>{{ $category['2']['category_name'] ?? "" }}</h3></button>
                </div>
                </a>
              </div>
@@ -39,7 +39,7 @@
              <a href="{{ $category['3']['id'] }}">
                <img style="width: 100%;height: 250px;border-radius:20px;" src="{{ asset($category['3']['category_image'] ?? "")}}" alt="Category Image">
              <div class="card-img-overlay">
-               <button class="btn btn-info"><h3>{{ $category['3']['category_name'] }}</h3></button>
+               <button class="btn btn-info"><h3>{{ $category['3']['category_name'] ?? "" }}</h3></button>
              </div>
              </a>
            </div>
@@ -71,9 +71,9 @@
             <div class="card h-100 ">
                 <img src="{{ asset('frontend/img/slider3.jpg') }}" class="card-img-top" alt="...">
                 <div class="card-body">
-                <h5 class="card-title">{{ $product['product_name'] }}</h5>
-                <h6 class="card-title">Price: ${{ $product['price'] }}</h6>
-                <h6 class="card-title">Shop: {{ $product['shop']['shop_name'] }}</h6>
+                <h5 class="card-title">{{ $product['product_name'] ?? "" }}</h5>
+                <h6 class="card-title">Price: ${{ $product['price'] ?? "" }}</h6>
+                <h6 class="card-title">Shop: {{ $product['shop']['shop_name'] ?? ""}}</h6>
                 <a href="#" class="btn btn-info"><i class="fas fa-cart-plus"></i> Add to cart</a>
                 </div>
             </div>
