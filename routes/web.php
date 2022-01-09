@@ -22,7 +22,16 @@ Route::get('/shop/{id}',[HomeController::class,'ShopProduct']);
 Route::get('/product-details/{product_id}',[HomeController::class,'productDetails']);
 Route::get('/cart/{id}',[HomeController::class,'Cart']);
 Route::get('/cart-details',[HomeController::class,'CartDetails']);
-Route::post('/quantity-update',[HomeController::class,"QuantityUpdate"]);
+Route::get('/update-quantity-minus/{cart_id}',[HomeController::class,"QuantityUpdateMinus"]);
+Route::get('/update-quantity-plus/{cart_id}',[HomeController::class,"QuantityUpdatePlus"]);
+Route::post('/apply-coupon',[HomeController::class,'CouponApply']);
+Route::get('/checkout',[HomeController::class,'Checkout']);
+Route::post('/user-login',[HomeController::class,'UserLogin']);
+Route::post('/user-code',[HomeController::class,'UserCode']);
+Route::get('/checkout-form',[HomeController::class,'CheckOutForm']);
+Route::get('/delivery-charge-cal',[HomeController::class,'DeliveryChargeCal']);
+Route::post('/order-place',[HomeController::class,'OrderPlace']);
+
 //admin panel
 Route::get('/home', function () {
     return view('home');

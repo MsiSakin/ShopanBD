@@ -44,4 +44,53 @@
     @endif
 </script>
 
+{{--  custome script  --}}
+<script>
+    $(document).ready(function(){
+        $(document).on('click','#quantity',function(){
+            let quantity = $('.update_qty').val();
+
+            let product_id = $(this).attr('data-id');
+
+            $.ajax({
+            	type:"post",
+                url:"/quantity-update",
+                data: {quantity:quantity,product_id:product_id},
+                success:function(res){
+
+                    $('#subtotal').html(res);
+                },
+                error:function(){
+                    alert(!Error);
+                }
+            });
+        });
+    });
+</script>
+
+//custom script
+<script>
+    $(document).ready(function(){
+        $("#sub_area").on('change',function(){
+            var Id = $("#sub_area option:selected").val();
+
+            $.ajax({
+                type:"get",
+                url:"/delivery-charge-cal",
+                data: {Id:Id},
+                success:function(res){
+
+                    $('#append_charge').html(res['delivery_charge']);
+                    $('#grand_total').html(res['grand_toal']);
+                    document.getElementById("del_charge").value = res['delivery_charge'];
+                    document.getElementById("gran_total").value = res['grand_toal'];
+
+                },
+                error:function(){
+                    alert(!Error);
+                }
+            })
+        });
+    });
+</script>
 

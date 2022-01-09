@@ -21,6 +21,7 @@ class CreateCartsTable extends Migration
             $table->bigInteger('shop_id');
             $table->integer('quantity');
             $table->float('price');
+            $table->float('sub_total');
             $table->timestamps();
         });
     }

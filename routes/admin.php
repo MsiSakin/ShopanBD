@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\ShopkeeperController;
 
 use App\Http\Controllers\Admin\DeliveryManController;
@@ -66,6 +67,18 @@ Route::prefix('admin')->middleware('theme:admin')->name('admin.')->group(functio
          Route::get('/slider/edit/{id}',[SliderController::class,'sliderEdit']);
          Route::post('/slider-update/{id}',[SliderController::class,'UpdateSlider']);
 
+         //coupon
+         Route::get('/coupon-details',[CouponController::class,'CouponDetails']);
+         Route::get('/add-coupon',[CouponController::class,'CouponAdd']);
+         Route::post('/coupon/store',[CouponController::class,'CouponStore']);
+         Route::post('/coupon-status',[CouponController::class,'couponStatus']);
+
+         //set area
+        Route::get('/location-details',[CouponController::class,'SetLocation']);
+        Route::get('/add-location',[CouponController::class,'AddLocation']);
+        Route::get('/area-create',[CouponController::class,'AddArea']);
+        Route::post('/area-store',[CouponController::class,'StoreArea']);
+        Route::post('/locate-set-store',[CouponController::class,'StoreLocation']);
     });
 
 });
