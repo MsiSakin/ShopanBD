@@ -112,10 +112,13 @@ class ApiController extends Controller
     public function CustomerLogin(Request $request){
          
          //check phone length or not
-         if(!isset($request['phone']) < 11 || $request['phone'] > 11){        
+         if(!isset($request['phone']) < 11 ){        
                 $error_message = "Phone Number Length 11 Digit!";
          }
 
+         $phoneValidation = Validator::make($request->all(),[
+            'phone' => 'unique:users',
+        ]);
           //check Phone exits or not
           if(isset($request['phone'])){
             $customer_phone = User::where('phone',$request['phone'])->count();
@@ -131,6 +134,8 @@ class ApiController extends Controller
                 "message"=>$error_message,
             ],200);
         }else{
+            if($phoneValidation->fails()){
+
                 $customer = User::where('phone',$request['phone'])->first();
                 $code = rand(0, 999999);
                 $customer->code = $code;
@@ -365,15 +370,22 @@ class ApiController extends Controller
             if(!empty($request['shop_address'])){
                 $shop->shop_address = $request->shop_address;
             }
-    
+            
+            $ShopPhoneLength = Validator::make($request->all(),[
+            'shop_phone' => 'min:11|max:11',
+            ]);
+            
+            
+            
             if(!empty($request['shop_phone'])){
-                if($request['phone'] < 11 || $request['phone'] > 11){
+                if($ShopPhoneLength->fails()){
                     return response()->json([
-                        'message'=>'Phone Number Length 11 Digits',
+                        'message'=>'Shop Phone Number Length 11 Digits',
                         'status'=>false
         
                     ],200);
                 }
+               
                 $shop->shop_phone = $request->shop_phone;
             }
     
@@ -920,7 +932,7 @@ class ApiController extends Controller
                 }
             
                 if(!empty($request['phone'])){
-                    if($request['phone'] < 11 || $request['phone'] > 11 ){
+                    if($request['phone'] < 11 ){
                         return response()->json([
                             "status"=>false,
                             "message"=>'Phone Length 11 Digits!',
