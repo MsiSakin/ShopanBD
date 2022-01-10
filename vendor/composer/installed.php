@@ -6,7 +6,8 @@
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
 
-        'reference' => 'bff774d63cee493bbf66a58c2070816a41319138',
+        'reference' => 'ac8fc4855ee140ec472e243a4e1a434408105552',
+
         'name' => 'laravel/laravel',
         'dev' => true,
     ),
@@ -410,8 +411,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-
-            'reference' => 'bff774d63cee493bbf66a58c2070816a41319138',
+            'reference' => 'ac8fc4855ee140ec472e243a4e1a434408105552',
 
             'dev_requirement' => false,
         ),
@@ -1014,12 +1014,13 @@
             'dev_requirement' => false,
         ),
         'symfony/css-selector' => array(
-            'pretty_version' => 'v6.0.2',
-            'version' => '6.0.2.0',
+
+            'pretty_version' => 'v5.4.2',
+            'version' => '5.4.2.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/css-selector',
             'aliases' => array(),
-            'reference' => '380f86c1a9830226f42a08b5926f18aed4195f25',
+            'reference' => 'cfcbee910e159df402603502fe387e8b677c22fd',
             'dev_requirement' => false,
         ),
         'symfony/deprecation-contracts' => array(
@@ -1218,21 +1219,21 @@
             'dev_requirement' => false,
         ),
         'symfony/string' => array(
-            'pretty_version' => 'v6.0.2',
-            'version' => '6.0.2.0',
+            'pretty_version' => 'v5.4.2',
+            'version' => '5.4.2.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/string',
             'aliases' => array(),
-            'reference' => 'bae261d0c3ac38a1f802b4dfed42094296100631',
+            'reference' => 'e6a5d5ecf6589c5247d18e0e74e30b11dfd51a3d',
             'dev_requirement' => false,
         ),
         'symfony/translation' => array(
-            'pretty_version' => 'v6.0.2',
-            'version' => '6.0.2.0',
+            'pretty_version' => 'v5.4.2',
+            'version' => '5.4.2.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/translation',
             'aliases' => array(),
-            'reference' => 'a16c33f93e2fd62d259222aebf792158e9a28a77',
+            'reference' => 'ff8bb2107b6a549dc3c5dd9c498dcc82c9c098ca',
             'dev_requirement' => false,
         ),
         'symfony/translation-contracts' => array(

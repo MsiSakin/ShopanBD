@@ -49,6 +49,7 @@ return array(
     'App\\Models\\Product' => $baseDir . '/app/Models/Product.php',
     'App\\Models\\SetLocation' => $baseDir . '/app/Models/SetLocation.php',
     'App\\Models\\Shop' => $baseDir . '/app/Models/Shop.php',
+    'App\\Models\\ShopDeviceToken' => $baseDir . '/app/Models/ShopDeviceToken.php',
     'App\\Models\\ShopImage' => $baseDir . '/app/Models/ShopImage.php',
     'App\\Models\\Shopkeeper' => $baseDir . '/app/Models/Shopkeeper.php',
     'App\\Models\\Slider' => $baseDir . '/app/Models/Slider.php',

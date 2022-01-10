@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
+use App\Models\Cart;
 use App\Models\Category;
 use App\Models\DeliveryMan;
 use App\Models\Product;
@@ -135,7 +136,6 @@ class ApiController extends Controller
             ],200);
         }else{
             if($phoneValidation->fails()){
-
                 $customer = User::where('phone',$request['phone'])->first();
                 $code = rand(0, 999999);
                 $customer->code = $code;
@@ -200,7 +200,7 @@ class ApiController extends Controller
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 $smsresult = curl_exec($ch);
 
-                //Result
+                 //Result
 
                 if(isset($smsresult)){
                     return response()->json([
@@ -214,8 +214,6 @@ class ApiController extends Controller
                     ],200);
                 }
             }
-
-
         }
     }
 
@@ -1013,5 +1011,80 @@ class ApiController extends Controller
 
             }
         }
+
+
+
+         //add to cart
+     public function Cart(Request $request,$id){
+        // return $id;
+                if(Auth::check()){
+        
+                }else{
+        
+        
+                     $check = Cart::where('product_id',$id)->where('session_id',$request['user_session_id'])->first();
+        
+                     if($check){
+                         $cart = Cart::where('product_id',$id)->where('session_id',$request['user_session_id'])->increment('quantity');
+                         if($cart){
+                            return response()->json([
+                                'message'=>'Already Add To Cart!',
+                                'status'=>true
+        
+                            ],200);
+                        }
+                     }else{
+        
+                         $product = Product::findOrfail($id);
+                         $cart_add = new Cart;
+                         $cart_add->customer_id = 0;
+                         $cart_add->session_id = $request['user_session_id'];
+                         $cart_add->product_id = $id;
+                         $cart_add->shop_id = $product['shop_id'];
+                         $cart_add->quantity = 1;
+                         $cart_add->price = $product['discounted_price'];
+                         $cart_add->sub_total = $product['discounted_price']*1;
+                         $cart_add->save();
+                         if($cart_add){
+                            return response()->json([
+                                'message'=>'Add To Cart Successfully Done',
+                                'status'=>true
+        
+                            ],200);
+                        }else{
+                            return response()->json([
+                                'message'=>'Add To Cart Failed!',
+                                'status'=>false
+                            ],200);
+                        }
+                     }
+                }
+             }
+        
+        
+              //cart details
+            public function CartDetails(Request $request){
+                if(Auth::check()){
+        
+                }else{
+                    $cart_details = Cart::with('product','shop')->where('session_id',$request['user_session_id'])->get();
+        
+                    $total = $cart_details->sum('sub_total');
+                    // return $cart_details;
+                    if($cart_details){
+                        return response()->json([
+                            'status'=>true,
+                            'cart_details' => $cart_details,
+                            'total' => $total
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>'Cart Details Not Found!'
+                        ],200);
+                    }
+                }
+            }
+        
 
 }

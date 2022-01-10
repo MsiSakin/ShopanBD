@@ -296,4 +296,8 @@ $(document).on("click",".activating",function () {
 
         })
     </script>
+
+
+
+
 @stack('scripts')

@@ -577,6 +577,7 @@ class ComposerStaticInitf75c478c332eb002b94f25fd98a221fa
         'App\\Models\\Product' => __DIR__ . '/../..' . '/app/Models/Product.php',
         'App\\Models\\SetLocation' => __DIR__ . '/../..' . '/app/Models/SetLocation.php',
         'App\\Models\\Shop' => __DIR__ . '/../..' . '/app/Models/Shop.php',
+        'App\\Models\\ShopDeviceToken' => __DIR__ . '/../..' . '/app/Models/ShopDeviceToken.php',
         'App\\Models\\ShopImage' => __DIR__ . '/../..' . '/app/Models/ShopImage.php',
         'App\\Models\\Shopkeeper' => __DIR__ . '/../..' . '/app/Models/Shopkeeper.php',
         'App\\Models\\Slider' => __DIR__ . '/../..' . '/app/Models/Slider.php',

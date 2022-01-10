@@ -349,6 +349,58 @@ class HomeController extends Controller
             $order_items->save();
         }
 
+
+
+
+        //push notification
+        $serverkey = 'AAAAAjKhGfQ:APA91bFiHMApm1ff6pUK3Iq1UhYAoMchL51QX8DEidR9IC_SbXxOlZXqmiyr-ishHIGq9bSQFAZLriCMpn_9dqwNb9pRWLIbjt1Pe8m4QPUOvDe5N6JOLymUjO9nkIqsMBB3VYZTPy_2';
+         $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
+         $token = 'cKMWd_i-424LH6uYler2Y6:APA91bHs0hhQCK763-Rh7DMpWLBGDtsNqPazI2W0gpyTIMKkalf7FvSNX7SehBTQmfcj6kXZ6luH0dmji4aI8-6EMAW6Wmt5EI7KOih6fS_OmBarZSCTOoqq-sZt6ri9oDnK88YC-sgl';
+            $notification = [
+                    'title' => "You Have An Order",
+                    'body' => "Please Check Your Order List \n You Have A New Order",
+
+                ];
+
+                $fcmNotification = [
+                    //'registration_ids' => $tokenList, //multple token array
+                    'to'        => $token, //single token
+                    'notification' => $notification,
+                ];
+
+
+
+                $headers = [
+                    'Authorization: key=' . $serverkey,
+                    'Content-Type: application/json',
+
+                ];
+
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL,$fcmUrl);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fcmNotification));
+                $result = curl_exec($ch);
+                curl_close($ch);
+                // echo $result;
+                return redirect()->back()->with("message","Order Placed Successfully");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
 

@@ -19,20 +19,20 @@ class ShopkeeperController extends Controller
 
      //Shopkeeper Request
      public function vendorDetails(){
-        
-        $shops = Shop::with('shopkeepers')->get();       
+
+        $shops = Shop::with('shopkeepers')->get();
         return view('shopkeeper.vendor_details',compact('shops'));
     }
 
-   
+
     //Update Shopkeeper Percentage
     public function updatePercent(Request $request, $id){
-        
+
         $shopkeeper = Shopkeeper::findorfail($id);
         $shopkeeper->percentage = $request['percentage_value'];
         $shopkeeper->varified_at = Carbon::now();
         $shopkeeper->save();
-      
+
         return redirect()->back()->with('message','Percentage Updated Successfully');
 
     }
@@ -56,7 +56,7 @@ class ShopkeeperController extends Controller
         $shopkeepers->varified_at = Carbon::now();
         $shopkeepers->save();
         return redirect()->back()->with('message','Shopkeepers Activated Successfully');
-        
+
     }
 
     //status-inactive
@@ -71,13 +71,13 @@ class ShopkeeperController extends Controller
         $shopkeepers->varified_at = Carbon::now();
         $shopkeepers->save();
         return redirect()->back()->with('message','Shopkeepers Inactivated Successfully');
-        
+
     }
 
     public function viewShop(Request $request,$id){
-       
+
         $shop = Shop::with('category','shop_image')->findOrfail($id);
-       
+
        return response()->json([
         'shop' =>$shop,
        ],200);

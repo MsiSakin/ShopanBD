@@ -57,7 +57,9 @@ Route::post('/shopkeeper-request',[AuthController::class,'store']);
 Route::get('/shopkeeper/shop-info/{id}',[ApiController::class,'shopInfo']);
 Route::post('/shopkeeper/shop-update/{id}',[ApiController::class,'shopUpdate']);
 Route::post('/shopkeeper/shop-cover-upload/{id}',[ApiController::class,'shopCover']);
-Route::get('/shopkeeper/shop-cover-image/{id}',[ApiController::class,'shopCoverImage']); 
+
+Route::get('/shopkeeper/shop-cover-image/{id}',[ApiController::class,'shopCoverImage']);
+
 Route::get('/shop-status/view/{id}',[ApiController::class,'shopStatus']);
 Route::post('/shop-status/update/{id}',[ApiController::class,'shopStatusUpdate']);
 Route::get('/all-shop',[ApiController::class,'allShop']);
@@ -89,5 +91,10 @@ Route::get('/category-wise-products/{category_id}',[ApiController::class,'Catego
 Route::get('/category-wise-subcategory/{category_id}',[ApiController::class,'CategoryWiseSubcategory']);
 Route::get('/shop-wise-products/{shop_id}',[ApiController::class,'ShopWiseProducts']);
 Route::post('/search-products',[ApiController::class,'SearchProduct']);
+Route::match(['get','post'],'/cart/{product_id}',[ApiController::class,'Cart']);
+Route::post('/cart-detail',[ApiController::class,'CartDetails']);
+
 //Vendor Api Route
 Route::post('/add-product',[ApiController::class,'AddProduct']);
+
+
