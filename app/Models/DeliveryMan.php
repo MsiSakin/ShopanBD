@@ -13,7 +13,15 @@ class DeliveryMan extends Model
         'name',
         'password',
         'phone',
-        
+        'image',
+        'address',
+        'status',
 
     ];
+
+    protected $appends = ['image_path'];
+
+    public function getImagePathAttribute(){
+        return asset($this->image);
+    }
 }
