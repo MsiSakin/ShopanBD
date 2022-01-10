@@ -135,6 +135,7 @@ class ApiController extends Controller
             ],200);
         }else{
             if($phoneValidation->fails()){
+
                 $customer = User::where('phone',$request['phone'])->first();
                 $code = rand(0, 999999);
                 $customer->code = $code;
@@ -198,7 +199,23 @@ class ApiController extends Controller
                 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 $smsresult = curl_exec($ch);
+
+                //Result
+
+                if(isset($smsresult)){
+                    return response()->json([
+                        'status'=> true,
+                        'message'=>"OTP Sent Successfully"
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Invalid OTP"
+                    ],200);
+                }
             }
+
+
         }
     }
 
