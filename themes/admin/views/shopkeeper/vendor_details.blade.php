@@ -20,9 +20,9 @@
         </div><!-- /.row -->
     </div><!-- /.container-fluid -->
     </div>
-    
+
     <div class="row">
-    
+
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
@@ -44,7 +44,7 @@
                         <th style="text-align:center">Percentage</th>
                         <th style="text-align:center">Status</th>
                         <th style="text-align:center">View Shop</th>
-                        
+
                     </tr>
                     </thead>
                     <tbody>
@@ -59,36 +59,36 @@
                                 <td style="text-align:center">{{$row->shopkeepers->description ?? ""}}</td>
                                 <td style="text-align:center">
                                     @if(!@empty($row->shopkeepers->image))
-                               
+
                                     <img width='40' height='30' src="{{asset($row->shopkeepers->image)}}">
                                     @endif
-                                   
+
                                 </td>
-                                
-                               
+
+
                                 <td style="text-align:center">
                                     {{$row->shopkeepers->percentage ?? ""}}
-                                    
+
                                 </td>
 
                                 <td style="text-align:center">
-                                   
+
                                         @if($row->shopkeepers->status == 0)
                                         <a href="javascript:;">
                                             <span class="badge badge-success activating" record="activating-vendor" recordid="{{$row->shopkeepers->id}}">ACTIVE</span>
-                                           
+
                                         </a>
                                         @elseif($row->shopkeepers->status == 1)
                                         <a href="javascript:;">
                                             <span class="badge badge-danger inactivating" record="inactivating-vendor" recordid="{{$row->shopkeepers->id}}">INACTIVE</span>
                                         </a>
                                         @endif
-                                    
-                                        
-                                    
-                                    
+
+
+
+
                                 </td>
-                                
+
                                 <td style="text-align:center">
                                     @if(!empty($row->shopkeepers['id']))
                                       <button type="button" id="viewShop" class="btn btn-sm btn-info" data-id="{{ $row['id'] }}" data-toggle="modal" data-target="#modal-lg">
@@ -98,14 +98,14 @@
                                 </td>
 
 
-                                
+
                                 {{-- <td style="text-align:center">
                                     <a href="javascript:;" class="btn btn-sm btn-danger sa-delete" record="shopkeepers" recordid="{{$row->id}}" title="Delete" style="margin-left: 15px">Delete&nbsp;<i class="fa fa-trash-alt"></i></a>
                                 </td> --}}
                             </tr>
                         @endforeach
                     </tbody>
-    
+
                 </table>
             </div>
             <!-- /.card-body -->
@@ -113,7 +113,7 @@
         <!-- /.card -->
     </div>
 </div>
-   
+
 
 
 
@@ -140,25 +140,25 @@
                             <th style="text-align:center">Shop Status</th>
                         </tr>
                 </thead>
-                <tbody>                 
-                        <tr>    
-                            <td style="text-align:center" id="shop_category"></td>                       
+                <tbody>
+                        <tr>
+                            <td style="text-align:center" id="shop_category"></td>
                             <td style="text-align:center" id="shop_address"></td>
-                            <td style="text-align:center" id="shop_phone"></td>                      
+                            <td style="text-align:center" id="shop_phone"></td>
                             <td style="text-align:center" id="shop_description"></td>
                             {{-- <td style="text-align:center" ><img width='40' height='30' id="shop_image"> </td>                       --}}
                             <td style="text-align:center">
-                                <span class="badge badge-success " id="shop_active_status" ></span>   
-                                <span class="badge badge-danger " id="shop_inactive_status" ></span>                          
-                            </td>                  
-                        </tr>               
+                                <span class="badge badge-success " id="shop_active_status" ></span>
+                                <span class="badge badge-danger " id="shop_inactive_status" ></span>
+                            </td>
+                        </tr>
                 </tbody>
             </table>
           {{--  <p>One fine body&hellip;</p>  --}}
         </div>
         <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-         
+
         </div>
       </div>
       <!-- /.modal-content -->
@@ -175,7 +175,7 @@
 <script>
 
     $(document).ready(function(){
-       
+
         $(document).on('click','#viewShop',function(){
             const id = $(this).attr('data-id');
 
@@ -186,14 +186,14 @@
                     id:id
                     },
                 success: function (result) {
-                    
-                    
+
+
                    $("#shop-name").html(result['shop']['shop_name']);
-                    
+
                     $("#shop_address").html(result['shop']['shop_address']);
                     $("#shop_phone").html(result['shop']['shop_phone']);
                     $("#shop_description").html(result['shop']['shop_description']);
-               
+
                     $("#shop_image").html(result['shop']['image_path']);
                     if(result['shop']['shop_status']==1){
                         $("#shop_active_status").html("Active");
@@ -202,28 +202,28 @@
                     }
                     $("#shop_category").html(result['shop']['category']['category_name']);
 
- 
+
                 },
 
-               
+
                 error: function () {
                     alert("Content load failed.");
                 }
             });
-        
+
         })
 
-        
-                
+
+
     });
 
 
-    
 
-       
+
+
 </script>
 @endpush
 
 
-    
+
 @endsection

@@ -50,41 +50,32 @@ class AuthController extends Controller
         //Shopkeeper Store
         public function store(Request $request)
         {
-
-
-            if(empty($request['name']) || empty($request['phone']) || empty($request['password'])   ){
-                $error_message='Please Fill All the Field';
+            
+       
+            if(empty($request['name']) ){
+                $error_message='Please add name!';
             }
-            if(isset($error_message)){
-                return response()->json([
-                    'error'=>$error_message,
-                    'status'=>false
-                ],200);
-            }
-
-            $validation = FacadesValidator::make($request->all(),[
-               
-             
-                
-                
-                
-               
-               
-                'shop_description' => 'required',
-                
-            ]);
 
             if(empty($request['phone'])){
                 $error_message = "Please Add Phone Number!";
             }
-
+            
+            
+             $PhoneLength = FacadesValidator::make($request->all(),[
+            'phone' => 'min:11|max:11',
+            ]);
+            
+            $PhoneUnique = FacadesValidator::make($request->all(),[
+            'phone' => 'unique:shopkeepers',
+            ]);
+            
             if(!empty($request['phone'])){
-                if ($request['phone'] < 11 || $request['phone'] > 11 ){
-                    $error_message = "Phone Number Length 11 Digit !";
+                if($PhoneLength->fails()){
+                    $error_message = "Phone Number Length 11 Digits!";  
                 }
-                $vendor_phone = Shopkeeper::where('phone',$request['phone'])->count();
-                if ($vendor_phone > 0){
-                    $error_message = "Phone already exits!";
+                if($PhoneUnique->fails()){
+                    
+                        $error_message = "Phone Already Exists!";
                 }
             }
 
@@ -94,7 +85,7 @@ class AuthController extends Controller
             }
 
             if(!empty($request['password'])){
-                if($request['password']<8){
+                if(!isset($request['password']) < 8 ){
                     $error_message = "Password Length Minimum 8 Digits!";
                 }           
             }
@@ -112,16 +103,33 @@ class AuthController extends Controller
                     $error_message = "Email already exits!";
                 }
             }
-
-            if(!empty($request['shop_phone'])){
-                if ($request['shop_phone'] < 11 || $request['shop_phone'] > 11 ){
-                    $error_message = "Shop Phone Number Length 11 Digit!";
-                }
-                $shop_phone = Shop::where('shop_phone',$request['shop_phone'])->count();
-                if ($shop_phone > 0){
-                    $error_message = "Shop Phone already exits!";
-                }
+            
+            if(empty($request['shop_phone'])){
+                    $error_message = "Please add shop phone!";          
             }
+            
+            
+             $ShopPhoneLength = FacadesValidator::make($request->all(),[
+            'shop_phone' => 'min:11|max:11',
+            ]);
+            
+            $ShopPhoneUnique = FacadesValidator::make($request->all(),[
+            'shop_phone' => 'unique:shops',
+            ]);
+            
+            if(!empty($request['shop_phone'])){
+                if($ShopPhoneLength->fails()){
+                    $error_message = "Shop Phone Number Length 11 Digits!";  
+                }
+                if($ShopPhoneUnique->fails()){
+                    
+                        $error_message = "Shop Phone Already Exists!";
+                        
+                }
+              
+            }
+           
+           
 
             if(empty($request['shop_address'])){
                 $error_message = "Please Add Shop Address!";

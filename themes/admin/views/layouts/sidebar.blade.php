@@ -185,7 +185,42 @@
                 </li>
             </ul>
         </li>
-
+        <li class="nav-item has-treeview @yield('coupon')">
+            <a href="#" class="nav-link @yield('coupon-class')">
+                <i class="nav-icon fas fa-table"></i>
+                <p>Coupon<i class="fas fa-angle-left right"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="{{ url('/admin/coupon-details') }}" class="nav-link @yield('couponList')">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Coupon Details</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item has-treeview @yield('location')">
+            <a href="#" class="nav-link @yield('location-class')">
+                <i class="nav-icon fas fa-table"></i>
+                <p>Set Delivery Location<i class="fas fa-angle-left right"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="{{ url('/admin/location-details') }}" class="nav-link @yield('locationList')">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Area Details</p>
+                    </a>
+                </li>
+            </ul>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="{{ url('/admin/area-create') }}" class="nav-link @yield('areaList')">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Area</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->
