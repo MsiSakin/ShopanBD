@@ -57,7 +57,9 @@ Route::post('/shopkeeper-request',[AuthController::class,'store']);
 Route::get('/shopkeeper/shop-info/{id}',[ApiController::class,'shopInfo']);
 Route::post('/shopkeeper/shop-update/{id}',[ApiController::class,'shopUpdate']);
 Route::post('/shopkeeper/shop-cover-upload/{id}',[ApiController::class,'shopCover']);
+
 Route::get('/shopkeeper/shop-cover-image/{id}',[ApiController::class,'shopCoverImage']);
+
 Route::get('/shop-status/view/{id}',[ApiController::class,'shopStatus']);
 Route::post('/shop-status/update/{id}',[ApiController::class,'shopStatusUpdate']);
 Route::get('/all-shop',[ApiController::class,'allShop']);

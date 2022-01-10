@@ -17,7 +17,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
 class ApiController extends Controller
@@ -112,9 +111,9 @@ class ApiController extends Controller
     }
 
     public function CustomerLogin(Request $request){
-
+         
          //check phone length or not
-         if(!isset($request['phone']) < 11 ){
+         if(!isset($request['phone']) < 11 ){        
                 $error_message = "Phone Number Length 11 Digit!";
          }
 
@@ -137,7 +136,6 @@ class ApiController extends Controller
             ],200);
         }else{
             if($phoneValidation->fails()){
-
                 $customer = User::where('phone',$request['phone'])->first();
                 $code = rand(0, 999999);
                 $customer->code = $code;
@@ -202,7 +200,7 @@ class ApiController extends Controller
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 $smsresult = curl_exec($ch);
 
-                //Result
+                 //Result
 
                 if(isset($smsresult)){
                     return response()->json([
@@ -216,8 +214,6 @@ class ApiController extends Controller
                     ],200);
                 }
             }
-
-
         }
     }
 
@@ -266,12 +262,12 @@ class ApiController extends Controller
 
 
 
-     //shop info
+     //shop info 
      public function shopInfo($id){
-
+        
 
         $shop = Shop::with('category')->where('id',$id)->select('id','category_id','shop_name','shop_address','shop_description','banner','shop_phone','shop_status')->first();
-
+           
 
 
         if (!empty($shop)){
@@ -358,39 +354,39 @@ class ApiController extends Controller
      public function shopUpdate(Request $request, $id)
      {
 
-        $shop = Shop::where('id',$id)->first();
+        $shop = Shop::where('id',$id)->first(); 
         if($shop){
             if(!empty($request['shop_name'])){
                 $shop->shop_name = $request->shop_name;
             }
-
+    
             if(!empty($request['category_id'])){
                 $shop->category_id = $request->category_id;
             }
-
-
+    
+    
             if(!empty($request['shop_address'])){
                 $shop->shop_address = $request->shop_address;
             }
-
+            
             $ShopPhoneLength = Validator::make($request->all(),[
             'shop_phone' => 'min:11|max:11',
             ]);
-
-
-
+            
+            
+            
             if(!empty($request['shop_phone'])){
                 if($ShopPhoneLength->fails()){
                     return response()->json([
                         'message'=>'Shop Phone Number Length 11 Digits',
                         'status'=>false
-
+        
                     ],200);
                 }
-
+               
                 $shop->shop_phone = $request->shop_phone;
             }
-
+    
             if(isset($request['banner'])){
                      unlink($shop->banner);
                      $banner = $request->file('banner');
@@ -398,21 +394,21 @@ class ApiController extends Controller
                      $directory2 = 'shopkeeper/images/shop/';
                      $banner->move($directory2, $bannerName);
                      $bannerUrl = $directory2.$bannerName;
-
+    
                      $shop->banner = $bannerUrl;
             }
-
+    
             if(!empty($request['shop_description'])){
                 $shop->shop_description = $request->shop_description;
             }
-
+    
             $shop->save();
-
+    
             if(!@empty($shop)){
                 return response()->json([
                     'message'=>'Shop Updated Successfully',
                     'status'=>true
-
+    
                 ],200);
 
             }else{
@@ -420,29 +416,29 @@ class ApiController extends Controller
                     'message'=>'Invalid Request!',
                     'status'=>false
                 ],200);
-            }
+            }   
         }else{
             return response()->json([
                 'message'=>'Shop Not Found!',
                 'status'=>false
             ],200);
-            }
+            }      
 
     }
 
 
         //Specific Shop Status
         public function shopStatus($id){
-
+        
             $shop = Shop::where('id',$id)->select('id','shop_status','banner')->first();
-
-
+               
+            
             if (!empty($shop)){
                 return response()->json([
                     'data'=>$shop,
                     'status'=>true
                 ],200);
-
+    
             }else{
                 return response()->json([
                     'status'=>false,
@@ -450,15 +446,15 @@ class ApiController extends Controller
                 ],200);
             }
         }
-
-
-
+    
+    
+    
          //Specific Shop Status Update
          public function shopStatusUpdate(Request $request,$id){
-
+            
             $shop = Shop::where('id',$id)->first();
-
-
+               
+    
             if (!empty($shop)){
                 $shop->shop_status = $request->shop_status;
                 $shop->save();
@@ -466,7 +462,7 @@ class ApiController extends Controller
                     'message' => 'Shop Status Updated Successfully',
                     'status'=>true
                 ],200);
-
+    
             }else{
                 return response()->json([
                     'status'=>false,
@@ -517,7 +513,7 @@ class ApiController extends Controller
             "message"=>$error_message,
         ],200);
     }
-
+  
     else{
              //image insert
         if(!empty($request['product_image'])){
@@ -577,9 +573,9 @@ class ApiController extends Controller
 
      //Specific Product information
      public function productInfo($id){
-
+        
         $product = Product::with('shop','category')->where('id',$id)->select('id','sub_category_id','category_id','shop_id','product_name','price','image','discount','discounted_price','short_des','long_des','status')->first();
-
+           
      if (!empty($product)){
             return response()->json([
                 'data'=>$product,
@@ -593,7 +589,7 @@ class ApiController extends Controller
             ],200);
         }
     }
-
+  
     //SubcategoryWiseProduct
     public function SubcategoryWiseProduct($sub_category_id){
         $subcategory_wise_product = Product::where('sub_category_id',$sub_category_id)->where('status',1)->select('id','category_id','sub_category_id','shop_id','product_name','image','price','discount','discounted_price','short_des','long_des')->paginate(15);
@@ -674,14 +670,14 @@ class ApiController extends Controller
         }
     }
 
-
+        
 
 
     //Specific Product Status
     public function productStatus($id){
-
+        
         $product = Product::where('id',$id)->select('id','status','image')->first();
-
+           
 
         if (!empty($product)){
             return response()->json([
@@ -701,9 +697,9 @@ class ApiController extends Controller
 
      //Specific Product Status Update
      public function productStatusUpdate(Request $request,$id){
-
+        
         $product = Product::where('id',$id)->first();
-
+           
 
         if (!empty($product)){
             $product->status = $request->status;
@@ -727,8 +723,8 @@ class ApiController extends Controller
      public function productInfoUpdate(Request $request, $id)
      {
 
-    $product = Product::where('id',$id)->first();
-
+    $product = Product::where('id',$id)->first(); 
+    
     if(!empty($request['category_id'])){
         $product->category_id = $request->category_id;
     }
@@ -784,9 +780,9 @@ class ApiController extends Controller
             'message'=>'Invalid Request!',
             'status'=>false
         ],200);
-        }
+        }   
     }
-
+   
 
      //Delivery Man Login
      public function deliveryManLogin(Request $request){
@@ -831,8 +827,8 @@ class ApiController extends Controller
                     'message'=>'Invalid Delivery Man!'
                 ],200);
             }
-
-
+            
+            
         }
 
     }
@@ -868,7 +864,7 @@ class ApiController extends Controller
                 $directory = 'delivery/images/deliveryman/';
                 $image->move($directory, $imageName);
                 $imageUrl = $directory.$imageName;
-
+                
                 $deliveryMan->image = $imageUrl;
 
                 $deliveryMan->save();
@@ -883,13 +879,13 @@ class ApiController extends Controller
                         'status'=>true
                     ],200);
                 }
-
+                
             }else{
                 return response()->json([
                     'message'=> 'Image Required!',
                     'status'=>true
                 ],200);
-            }
+            } 
         }else{
             return response()->json([
                 'message'=>'Delivery Man Not Found!',
@@ -903,7 +899,7 @@ class ApiController extends Controller
      //Delivery Man Information View
      public function deliveryManInfo($id){
         $deliveryMan = DeliveryMan::where('id',$id)->select('id','name','image','phone','document_image','document_no','address')->first();
-
+       
         if($deliveryMan){
             return response()->json([
                 'data'=> $deliveryMan,
@@ -926,13 +922,13 @@ class ApiController extends Controller
             if($deliveryMan){
 
                 if(!empty($request['name'])){
-                    $deliveryMan->name = $request->name;
+                    $deliveryMan->name = $request->name;  
                 }
-
+            
                 if(!empty($request['address'])){
-                    $deliveryMan->address = $request->address;
+                    $deliveryMan->address = $request->address;  
                 }
-
+            
                 if(!empty($request['phone'])){
                     if($request['phone'] < 11 ){
                         return response()->json([
@@ -940,14 +936,14 @@ class ApiController extends Controller
                             "message"=>'Phone Length 11 Digits!',
                         ],200);
                     }else{
-                        $deliveryMan->phone = $request->phone;
+                        $deliveryMan->phone = $request->phone; 
                     }
                 }
 
                 if($request->document_image){
                     if($deliveryMan->document_image){
                         unlink($deliveryMan->document_image);
-                    }
+                    } 
                     $docImage = $request->file('document_image');
                      $docImageName = uniqid().'.'.$docImage->extension();
                      $directory = 'delivery/images/documents/';
@@ -956,7 +952,7 @@ class ApiController extends Controller
 
                      $deliveryMan->document_image = $docImageUrl;
                 }
-
+                                       
                 $deliveryMan->save();
                 if($deliveryMan){
                 return response()->json([
@@ -969,18 +965,18 @@ class ApiController extends Controller
                         'message'=>'Invalid Request!',
                         'status'=>false
                     ],200);
-                }
+                }            
             }else{
                 return response()->json([
                     'message'=>'Delivery Man Not Found!',
                     'status'=>false
                 ],200);
-            }
+            } 
         }
 
-        //Delivery Man Password Change
+        //Delivery Man Password Change 
         public function deliveryManChangePassword(Request $request,$id){
-
+           
             $password = $request->password;
             if($password < 8){
                 return response()->json([
@@ -997,107 +993,98 @@ class ApiController extends Controller
                         return response()->json([
                             'message'=>'Password Changed Successfully',
                             'status'=>true
-
+    
                         ],200);
                     }else{
                         return response()->json([
                             'message'=>'Invalid Request!',
                             'status'=>false
                         ],200);
-                    }
+                    } 
                 }else{
                     return response()->json([
                         'message'=>'Delivery Man Not Found!',
                         'status'=>false
                     ],200);
-                }
-
+                } 
+                
 
             }
         }
+
 
 
          //add to cart
-     //add to cart
      public function Cart(Request $request,$id){
-// return $id;
-        if(Auth::check()){
-
-        }else{
-
-
-             $check = Cart::where('product_id',$id)->where('session_id',$request['user_session_id'])->first();
-
-             if($check){
-                 $cart = Cart::where('product_id',$id)->where('session_id',$request['user_session_id'])->increment('quantity');
-                 if($cart){
-                    return response()->json([
-                        'message'=>'Already Add To Cart!',
-                        'status'=>true
-
-                    ],200);
-                }
-             }else{
-
-                 $product = Product::findOrfail($id);
-                 $cart_add = new Cart;
-                 $cart_add->customer_id = 0;
-                 $cart_add->session_id = $request['user_session_id'];
-                 $cart_add->product_id = $id;
-                 $cart_add->shop_id = $product['shop_id'];
-                 $cart_add->quantity = 1;
-                 $cart_add->price = $product['discounted_price'];
-                 $cart_add->sub_total = $product['discounted_price']*1;
-                 $cart_add->save();
-                 if($cart_add){
-                    return response()->json([
-                        'message'=>'Add To Cart Successfully Done',
-                        'status'=>true
-
-                    ],200);
+        // return $id;
+                if(Auth::check()){
+        
                 }else{
-                    return response()->json([
-                        'message'=>'Add To Cart Failed!',
-                        'status'=>false
-                    ],200);
+        
+        
+                     $check = Cart::where('product_id',$id)->where('session_id',$request['user_session_id'])->first();
+        
+                     if($check){
+                         $cart = Cart::where('product_id',$id)->where('session_id',$request['user_session_id'])->increment('quantity');
+                         if($cart){
+                            return response()->json([
+                                'message'=>'Already Add To Cart!',
+                                'status'=>true
+        
+                            ],200);
+                        }
+                     }else{
+        
+                         $product = Product::findOrfail($id);
+                         $cart_add = new Cart;
+                         $cart_add->customer_id = 0;
+                         $cart_add->session_id = $request['user_session_id'];
+                         $cart_add->product_id = $id;
+                         $cart_add->shop_id = $product['shop_id'];
+                         $cart_add->quantity = 1;
+                         $cart_add->price = $product['discounted_price'];
+                         $cart_add->sub_total = $product['discounted_price']*1;
+                         $cart_add->save();
+                         if($cart_add){
+                            return response()->json([
+                                'message'=>'Add To Cart Successfully Done',
+                                'status'=>true
+        
+                            ],200);
+                        }else{
+                            return response()->json([
+                                'message'=>'Add To Cart Failed!',
+                                'status'=>false
+                            ],200);
+                        }
+                     }
                 }
              }
-        }
-     }
-
-
-      //cart details
-    public function CartDetails(Request $request){
-        if(Auth::check()){
-
-        }else{
-            $cart_details = Cart::with('product','shop')->where('session_id',$request['user_session_id'])->get();
-
-            $total = $cart_details->sum('sub_total');
-            // return $cart_details;
-            if($cart_details){
-                return response()->json([
-                    'status'=>true,
-                    'cart_details' => $cart_details,
-                    'total' => $total
-                ],200);
-            }else{
-                return response()->json([
-                    'status'=>false,
-                    'message'=>'Cart Details Not Found!'
-                ],200);
+        
+        
+              //cart details
+            public function CartDetails(Request $request){
+                if(Auth::check()){
+        
+                }else{
+                    $cart_details = Cart::with('product','shop')->where('session_id',$request['user_session_id'])->get();
+        
+                    $total = $cart_details->sum('sub_total');
+                    // return $cart_details;
+                    if($cart_details){
+                        return response()->json([
+                            'status'=>true,
+                            'cart_details' => $cart_details,
+                            'total' => $total
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>'Cart Details Not Found!'
+                        ],200);
+                    }
+                }
             }
-        }
-    }
-
-
-
-
-
-
-
-
-
-
+        
 
 }

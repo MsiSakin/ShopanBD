@@ -1,4 +1,4 @@
-<?php
+  <?php
 
 namespace App\Http\Controllers\Shopkeeper;
 
@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
-
 
 
 class AuthController extends Controller
@@ -113,7 +112,6 @@ class AuthController extends Controller
                     $error_message = "Please add shop phone!";
             }
 
-
              $ShopPhoneLength = FacadesValidator::make($request->all(),[
             'shop_phone' => 'min:11|max:11',
             ]);
@@ -133,8 +131,6 @@ class AuthController extends Controller
                 }
 
             }
-
-
 
             if(empty($request['shop_address'])){
                 $error_message = "Please Add Shop Address!";
@@ -170,10 +166,7 @@ class AuthController extends Controller
                     $directory2 = 'shopkeeper/images/shop/';
                     $banner->move($directory2, $bannerName);
                     $bannerUrl = $directory2.$bannerName;
-
-
                     $shopkeeper_id=  Shopkeeper::insertGetId([
-
                         'name' => $request['name'],
                         'email' => $request['email'],
                         'password' => Hash::make($request['password']),
@@ -184,8 +177,6 @@ class AuthController extends Controller
                         'status' => '0',
                         'percentage' => '0',
                     ]);
-
-
                     $shop = new Shop();
                     $shop->shop_name = $request->shop_name;
                     $shop->category_id = $request->category_id;
@@ -217,11 +208,6 @@ class AuthController extends Controller
                         ],200);
                     }
                 }
-
-
             }
-
         }
-
-
 }
