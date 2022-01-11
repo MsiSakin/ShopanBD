@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/',[HomeController::class,'HomePage']);
 Route::get('/categories/{id}',[HomeController::class,'CategoryShow']);
 Route::get('/sub-categories/{id}',[HomeController::class,'SubcategoryShow']);
-Route::get('/shop',[HomeController::class,'Shop']);
+Route::get('/categorywise_shop/{id}',[HomeController::class,'Shop']);
 Route::get('/shop/{id}',[HomeController::class,'ShopProduct']);
 Route::get('/product-details/{product_id}',[HomeController::class,'productDetails']);
 Route::get('/cart/{id}',[HomeController::class,'Cart']);
