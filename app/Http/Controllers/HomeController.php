@@ -10,6 +10,7 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\SetLocation;
 use App\Models\Shop;
+use App\Models\ShopDeviceToken;
 use App\Models\ShopImage;
 use App\Models\Slider;
 use App\Models\Subcategory;
@@ -33,8 +34,9 @@ class HomeController extends Controller
         $sub_category = Subcategory::where('category_id',$id)->get()->toArray();
         $sliders = Slider::where('status',1)->where('category_id',$id)->get()->toArray();
         $products = Product::with('shop')->where('category_id',$id)->where('status',1)->get()->toArray();
+        $category_id = $id;
         // return $products;
-        return view('Frontend.category.category_page',compact('sub_category','sliders','products'));
+        return view('Frontend.category.category_page',compact('sub_category','sliders','products','category_id'));
 
     }
 
@@ -48,8 +50,8 @@ class HomeController extends Controller
     }
 
     //Shop
-    public function Shop(){
-        $shops = Shop::with('shop')->latest()->get()->toArray();
+    public function Shop($id){
+        $shops = Shop::with('shop')->where('category_id',$id)->latest()->get()->toArray();
         // return $shops;
         return view('Frontend.shop.shop_page',compact('shops'));
     }
@@ -310,6 +312,50 @@ class HomeController extends Controller
 
     }
 
+    public function NotifyDeliveryMan(){
+
+
+        sleep(10);
+            //push notification
+        $Shop_carts = Cart::where('session_id',Session::get('session_id'))->select('shop_id')->distinct()->get()->toArray();
+
+        $serverkey = 'AAAAAjKhGfQ:APA91bFiHMApm1ff6pUK3Iq1UhYAoMchL51QX8DEidR9IC_SbXxOlZXqmiyr-ishHIGq9bSQFAZLriCMpn_9dqwNb9pRWLIbjt1Pe8m4QPUOvDe5N6JOLymUjO9nkIqsMBB3VYZTPy_2';
+         $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
+         $token = 'cKMWd_i-424LH6uYler2Y6:APA91bHs0hhQCK763-Rh7DMpWLBGDtsNqPazI2W0gpyTIMKkalf7FvSNX7SehBTQmfcj6kXZ6luH0dmji4aI8-6EMAW6Wmt5EI7KOih6fS_OmBarZSCTOoqq-sZt6ri9oDnK88YC-sgl';
+         $notification = [
+            'title' => "New Order Request Found",
+            'body' => "Please Check Your Order List \n And Grab The Order",
+
+        ];
+
+        $fcmNotification = [
+            //'registration_ids' => $tokenList, //multple token array
+            'to'        => $token, //single token
+            'notification' => $notification,
+        ];
+
+
+
+        $headers = [
+            'Authorization: key=' . $serverkey,
+            'Content-Type: application/json',
+
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL,$fcmUrl);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        // curl_setopt($ch, CURLOPT_TIMEOUT_MS, 59); //in miliseconds
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fcmNotification));
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+
+    }
+
 
     //OrderPlace
     public function OrderPlace(Request $request){
@@ -353,9 +399,16 @@ class HomeController extends Controller
 
 
         //push notification
+        $Shop_carts = Cart::where('session_id',Session::get('session_id'))->select('shop_id')->distinct()->get()->toArray();
+
         $serverkey = 'AAAAAjKhGfQ:APA91bFiHMApm1ff6pUK3Iq1UhYAoMchL51QX8DEidR9IC_SbXxOlZXqmiyr-ishHIGq9bSQFAZLriCMpn_9dqwNb9pRWLIbjt1Pe8m4QPUOvDe5N6JOLymUjO9nkIqsMBB3VYZTPy_2';
          $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
-         $token = 'cKMWd_i-424LH6uYler2Y6:APA91bHs0hhQCK763-Rh7DMpWLBGDtsNqPazI2W0gpyTIMKkalf7FvSNX7SehBTQmfcj6kXZ6luH0dmji4aI8-6EMAW6Wmt5EI7KOih6fS_OmBarZSCTOoqq-sZt6ri9oDnK88YC-sgl';
+         foreach($Shop_carts as $cart){
+        //  $token = 'cKMWd_i-424LH6uYler2Y6:APA91bHs0hhQCK763-Rh7DMpWLBGDtsNqPazI2W0gpyTIMKkalf7FvSNX7SehBTQmfcj6kXZ6luH0dmji4aI8-6EMAW6Wmt5EI7KOih6fS_OmBarZSCTOoqq-sZt6ri9oDnK88YC-sgl';
+            $dev_token = ShopDeviceToken::where('shop_id',$cart['shop_id'])->first();
+
+            $token = $dev_token['device_token'];
+            // return $token;die;
             $notification = [
                     'title' => "You Have An Order",
                     'body' => "Please Check Your Order List \n You Have A New Order",
@@ -385,22 +438,11 @@ class HomeController extends Controller
                 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fcmNotification));
                 $result = curl_exec($ch);
                 curl_close($ch);
+
+                $deliver = $this->NotifyDeliveryMan();
+            }
                 // echo $result;
                 return redirect()->back()->with("message","Order Placed Successfully");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
 

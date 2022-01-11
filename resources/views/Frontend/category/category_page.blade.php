@@ -106,7 +106,7 @@
           </div>
         </div>
         <div class="col-md-2"style="">
-          <div><a class="all-at" href="{{ url('/shop') }}"><h5>Shop</h5></a></div>
+          <div><a class="all-at" href="{{ url('/categorywise_shop/'.$category_id) }}"><h5>Shop</h5></a></div>
         </div>
       </div>
       <div>
