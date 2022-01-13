@@ -13,7 +13,7 @@ class ShopkeeperController extends Controller
 {
     //Shopkeeper Request
     public function vendorList(){
-        $shopkeepers = Shopkeeper::where('status','0')->latest()->get();
+        $shopkeepers = Shopkeeper::where('status','0')->latest()->get()->paginate(15);
         return view('shopkeeper.vendor_list',compact('shopkeepers'));
     }
 
