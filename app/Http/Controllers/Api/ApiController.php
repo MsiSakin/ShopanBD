@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\Cart;
 use App\Models\Category;
+use App\Models\Coupon;
 use App\Models\DeliveryMan;
 use App\Models\Product;
 use App\Models\Shop;
@@ -14,6 +15,7 @@ use App\Models\Shopkeeper;
 use App\Models\Slider;
 use App\Models\Subcategory;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -112,6 +114,9 @@ class ApiController extends Controller
     }
 
     public function CustomerLogin(Request $request){
+        $request->authenticate();
+
+        $request->session()->regenerate();
 
          //check phone length or not
          if(!isset($request['phone']) < 11 ){
@@ -250,7 +255,7 @@ class ApiController extends Controller
 
     //All Shop
     public function allShop(){
-    $shops = Shop::where('shop_status',1)->select('id','shopkeeper_id','category_id','shop_name','shop_address','shop_description','banner','shop_phone','shop_status')->paginate(15);
+    $shops = Shop::where('shop_status',1)->with('category')->select('id','shopkeeper_id','category_id','shop_name','shop_address','shop_description','banner','shop_phone','shop_status')->paginate(15);
     if(!@empty($shops)){
         return response()->json([
             'status'=> true,
@@ -596,7 +601,7 @@ class ApiController extends Controller
 
     //SubcategoryWiseProduct
     public function SubcategoryWiseProduct($sub_category_id){
-        $subcategory_wise_product = Product::where('sub_category_id',$sub_category_id)->where('status',1)->select('id','category_id','sub_category_id','shop_id','product_name','image','price','discount','discounted_price','short_des','long_des')->paginate(15);
+        $subcategory_wise_product = Product::with('shop')->where('sub_category_id',$sub_category_id)->where('status',1)->select('id','category_id','sub_category_id','shop_id','product_name','image','price','discount','discounted_price','short_des','long_des')->paginate(15);
         if($subcategory_wise_product){
             return response()->json([
                 'status'=> true,
@@ -612,7 +617,7 @@ class ApiController extends Controller
 
     //ProductDetails
     public function ProductDetails(){
-        $product_details = Product::latest()->select('id','category_id','sub_category_id','shop_id','product_name','image','price','discount','discounted_price','short_des','long_des')->where('status',1)->paginate(15);
+        $product_details = Product::with('shop')->latest()->select('id','category_id','sub_category_id','shop_id','product_name','image','price','discount','discounted_price','short_des','long_des')->where('status',1)->paginate(15);
         if($product_details){
             return response()->json([
                 'status'=> true,
@@ -628,7 +633,7 @@ class ApiController extends Controller
 
     //CategoryWiseProduct
     public function CategoryWiseProduct($category_id){
-        $category_wise_products = Product::where('category_id',$category_id)->where('status',1)->select('id','category_id','sub_category_id','shop_id','product_name','image','price','discount','discounted_price','short_des','long_des')->paginate(15);
+        $category_wise_products = Product::with('shop')->where('category_id',$category_id)->where('status',1)->select('id','category_id','sub_category_id','shop_id','product_name','image','price','discount','discounted_price','short_des','long_des')->paginate(15);
         if($category_wise_products){
             return response()->json([
                 'status'=> true,
@@ -660,7 +665,7 @@ class ApiController extends Controller
 
     //SearchProduct
     public function SearchProduct(Request $request){
-        $search = Product::where('product_name', 'LIKE', "%{$request['search_product']}%")->select('id','category_id','sub_category_id','shop_id','product_name','image','price','discount','discounted_price','short_des','long_des')->where('status',1)->paginate(15);
+        $search = Product::with('shop')->where('product_name', 'LIKE', "%{$request['search_product']}%")->select('id','category_id','sub_category_id','shop_id','product_name','image','price','discount','discounted_price','short_des','long_des')->where('status',1)->paginate(15);
         if($search){
             return response()->json([
                 'status'=> true,
@@ -933,8 +938,12 @@ class ApiController extends Controller
                     $deliveryMan->address = $request->address;
                 }
 
+                $phoneValidation = Validator::make($request->all(),[
+                    'phone' => 'min:11',
+                    ]);
+
                 if(!empty($request['phone'])){
-                    if($request['phone'] < 11 ){
+                    if($phoneValidation->fails() ){
                         return response()->json([
                             "status"=>false,
                             "message"=>'Phone Length 11 Digits!',
@@ -955,6 +964,10 @@ class ApiController extends Controller
                      $docImageUrl = $directory.$docImageName;
 
                      $deliveryMan->document_image = $docImageUrl;
+                }
+
+                if($request['document_no']){
+                    $deliveryMan->document_no = $request['document_no'];
                 }
 
                 $deliveryMan->save();
@@ -982,13 +995,35 @@ class ApiController extends Controller
         public function deliveryManChangePassword(Request $request,$id){
 
             $password = $request->password;
-            if($password < 8){
+            $oldPass = $request->old_password;
+
+
+            $passwordValidation = Validator::make($request->all(),[
+                'password' => 'min:8',
+                ]);
+            if($passwordValidation->fails()){
                 return response()->json([
                     'message'=>'Password length : minimum 8',
                     'status'=>false
                 ],200);
+            }
+            if($password == $oldPass){
+                return response()->json([
+                    'message'=>'New Password & Old Password Can not be Same!',
+                    'status'=>false
+                ],200);
+            }
+
+            $delMan = DeliveryMan::where('id',$id)->first();
+            $oldPassword = Hash::check($oldPass, $delMan['password']);
+
+            if(empty($oldPassword)){
+                return response()->json([
+                    'message'=>'Old password mismatch!',
+                    'status'=>false
+                ],200);
             }else{
-                $delMan = DeliveryMan::where('id',$id)->first();
+
                 if($delMan){
                     $delMan->password = Hash::make($password);
                     $delMan->save();
@@ -1025,11 +1060,10 @@ class ApiController extends Controller
 
         }else{
 
-
-             $check = Cart::where('product_id',$id)->where('session_id',$request['user_session_id'])->first();
+             $check = Cart::where('product_id',$id)->where('session_id',$request['user_session'])->first();
 
              if($check){
-                 $cart = Cart::where('product_id',$id)->where('session_id',$request['user_session_id'])->increment('quantity');
+                 $cart = Cart::where('product_id',$id)->where('session_id',$request['user_session'])->increment('quantity');
                  if($cart){
                     return response()->json([
                         'message'=>'Already Add To Cart!',
@@ -1042,7 +1076,7 @@ class ApiController extends Controller
                  $product = Product::findOrfail($id);
                  $cart_add = new Cart;
                  $cart_add->customer_id = 0;
-                 $cart_add->session_id = $request['user_session_id'];
+                 $cart_add->session_id = $request['user_session'];
                  $cart_add->product_id = $id;
                  $cart_add->shop_id = $product['shop_id'];
                  $cart_add->quantity = 1;
@@ -1071,7 +1105,7 @@ class ApiController extends Controller
         if(Auth::check()){
 
         }else{
-            $cart_details = Cart::with('product','shop')->where('session_id',$request['user_session_id'])->get();
+            $cart_details = Cart::with('product','shop')->where('session_id',$request['user_session'])->get();
 
             $total = $cart_details->sum('sub_total');
             // return $cart_details;
@@ -1088,8 +1122,88 @@ class ApiController extends Controller
                 ],200);
             }
         }
+
     }
 
+
+    //QuantityUpdate
+    public function QuantityUpdateMinus($cart_id){
+        $cart = Cart::where('id',$cart_id)->first();
+        if($cart['quantity'] <= 1){
+            $cart->quantity = 1;
+            $cart->sub_total = $cart['price']*$cart['quantity'];
+            $cart->save();
+        }else{
+            $cart->decrement('quantity');
+            $cart->sub_total = $cart['price']*$cart['quantity'];
+            $cart->save();
+        }
+
+        if($cart){
+            return response()->json([
+                'status'=>true,
+                'message' => 'Quantity Updated'
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>'Failed to update quantity!'
+            ],200);
+        }
+
+
+
+    }
+
+
+    //QuantityUpdatePlus
+    public function QuantityUpdatePlus($cart_id){
+        $cart = Cart::where('id',$cart_id)->first();
+        $cart->increment('quantity');
+        $cart->sub_total = $cart['price']*$cart['quantity'];
+        $cart->save();
+        if($cart){
+            return response()->json([
+                'status'=>true,
+                'message' => 'Quantity Updated'
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>'Failed to update quantity!'
+            ],200);
+        }
+    }
+
+     //CouponApply
+     public function CouponApply(Request $request){
+        $coupon = $request['coupon_name'];
+
+        $coupon_data = Coupon::where('coupon_name',$coupon)->count();
+        if($coupon_data > 0){
+            $coupon_details = Coupon::where('coupon_name',$coupon)->first();
+            $validity_check = Carbon::now();
+            if($coupon_details['validity'] < $validity_check){
+                return redirect()->back()->with('error',"Coupon Already Expired");
+            }else{
+                Session::put('coupon_session',[
+                    'coupon_name'=>$coupon_details['coupon_name'],
+                    'coupon_discount'=>$coupon_details['discount']
+                ]);
+
+                return response()->json([
+                    'status'=>true,
+                    'message' => 'Coupon Applied'
+                ],200);
+            }
+
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>'Invalid Coupon!'
+            ],200);
+        }
+    }
 
 
 

@@ -23,6 +23,8 @@ class CreateUsersTable extends Migration
             $table->string('image')->nullable();
             $table->string('status')->nullable();
             $table->string('code')->nullable();
+            $table->string('billing_address')->nullable();
+            $table->string('billing_phone')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

@@ -74,17 +74,17 @@
                     <div class="col-lg-1"></div>
                 </div>
               <h4 class="mb-3">Billing address</h4>
-              <form action="{{ url('/order-place') }}" method="post" class="needs-validation">
+              <form action="{{ url('/order-place/'.$customer['id']) }}" method="post" class="needs-validation">
                 @csrf
                 <div class="mb-3">
                   <label for="Phone">Phone</label>
-                  <input type="number" class="form-control" name="phone" placeholder="Enter Your Phone Number" required>
+                  <input type="number" class="form-control" name="billing_phone" placeholder="Enter Your Phone Number" value="{{ $customer['billing_phone'] ?? ""}}" required>
                 </div>
 
 
                 <div class="mb-3">
                   <label for="address">Address</label>
-                  <input type="text" class="form-control" name="address" placeholder="Enter Your Address" required>
+                  <input type="text" class="form-control" name="billing_address" placeholder="Enter Your Address" value="{{ $customer['billing_address'] ?? ""}}" required>
                 </div>
 
 
