@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 11, 2022 at 12:35 PM
+-- Generation Time: Jan 13, 2022 at 01:16 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 7.4.24
 
@@ -83,7 +83,7 @@ INSERT INTO `areas` (`id`, `area_name`, `created_at`, `updated_at`) VALUES
 
 CREATE TABLE `carts` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `customer_id` bigint(20) NOT NULL,
+  `customer_id` int(20) DEFAULT NULL,
   `session_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `product_id` bigint(20) NOT NULL,
   `shop_id` int(11) DEFAULT NULL,
@@ -99,7 +99,8 @@ CREATE TABLE `carts` (
 --
 
 INSERT INTO `carts` (`id`, `customer_id`, `session_id`, `product_id`, `shop_id`, `quantity`, `price`, `sub_total`, `created_at`, `updated_at`) VALUES
-(70, 0, '6aWe5g9oU4e3Rvihi0pTznsDTtDyYQUQBWpEO0sm', 14, 2, 1, 25.00, 25, '2022-01-11 05:22:24', '2022-01-11 05:22:24');
+(73, 1, 'IEbuld45FIGYHl7pno0PZleuwRS58pD8tBCStRvk', 14, 2, 1, 25.00, 25, '2022-01-13 05:48:03', '2022-01-13 05:48:18'),
+(74, NULL, 'IEbuld45FIGYHl7pno0PZleuwRS58pD8tBCStRvk', 13, 5, 1, 655.00, 655, '2022-01-13 05:52:04', '2022-01-13 05:52:04');
 
 -- --------------------------------------------------------
 
@@ -172,6 +173,13 @@ CREATE TABLE `delivery_men` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `delivery_men`
+--
+
+INSERT INTO `delivery_men` (`id`, `name`, `varified_at`, `password`, `phone`, `image`, `status`, `document_image`, `document_no`, `address`, `remember_token`, `created_at`, `updated_at`) VALUES
+(2, 'tom', '2022-01-13 06:44:32', '$2y$10$s8J1jsp0ae78h8cnUeKHzu9apBJj3NLmaky5iutmqGUAJnq6mgEbS', '01234567890', 'delivery/images/deliveryman/61dfca5009024.jpg', '1', '', NULL, 'shitakindo', NULL, '2022-01-13 00:44:32', '2022-01-13 01:09:56');
+
 -- --------------------------------------------------------
 
 --
@@ -205,7 +213,6 @@ CREATE TABLE `migrations` (
 --
 
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
-(1, '2014_10_12_000000_create_users_table', 1),
 (2, '2014_10_12_100000_create_password_resets_table', 1),
 (3, '2019_08_19_000000_create_failed_jobs_table', 1),
 (4, '2019_12_14_000001_create_personal_access_tokens_table', 1),
@@ -225,7 +232,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (20, '2022_01_08_111335_create_set_locations_table', 12),
 (21, '2022_01_09_074115_create_orders_table', 13),
 (22, '2022_01_09_094200_create_order_items_table', 14),
-(23, '2022_01_10_124042_create_shop_device_tokens_table', 15);
+(23, '2022_01_10_124042_create_shop_device_tokens_table', 15),
+(24, '2014_10_12_000000_create_users_table', 16);
 
 -- --------------------------------------------------------
 
@@ -259,7 +267,9 @@ CREATE TABLE `orders` (
 INSERT INTO `orders` (`id`, `customer_id`, `session_id`, `date`, `phone`, `address`, `area_id`, `sub_area_id`, `payment_type`, `total`, `grand_total`, `delivery_man_id`, `delivery_charge`, `status`, `created_at`, `updated_at`) VALUES
 (72, 0, '6aWe5g9oU4e3Rvihi0pTznsDTtDyYQUQBWpEO0sm', '2022-01-11', '01234567894', 'adgag', 1, 3, 'on', 25.00, 45.00, NULL, 20.00, 'pending', '2022-01-11 05:23:01', '2022-01-11 05:23:01'),
 (73, 0, '6aWe5g9oU4e3Rvihi0pTznsDTtDyYQUQBWpEO0sm', '2022-01-11', '01234567894', 'ewqgwqeg', 1, 3, 'on', 25.00, 45.00, NULL, 20.00, 'pending', '2022-01-11 05:26:45', '2022-01-11 05:26:45'),
-(74, 0, '6aWe5g9oU4e3Rvihi0pTznsDTtDyYQUQBWpEO0sm', '2022-01-11', '012345645633', 'gfne', 1, 1, 'on', 25.00, 50.00, NULL, 25.00, 'pending', '2022-01-11 05:30:59', '2022-01-11 05:30:59');
+(74, 0, '6aWe5g9oU4e3Rvihi0pTznsDTtDyYQUQBWpEO0sm', '2022-01-11', '012345645633', 'gfne', 1, 1, 'on', 25.00, 50.00, NULL, 25.00, 'pending', '2022-01-11 05:30:59', '2022-01-11 05:30:59'),
+(75, 0, 'IEbuld45FIGYHl7pno0PZleuwRS58pD8tBCStRvk', '2022-01-13', '01731107731', 'dhanmondi', 1, 1, 'on', 25.00, 50.00, NULL, 25.00, 'pending', '2022-01-13 03:50:15', '2022-01-13 03:50:15'),
+(76, 1, 'IEbuld45FIGYHl7pno0PZleuwRS58pD8tBCStRvk', '2022-01-13', '01623036654', 'SHitakundo', 1, 3, 'on', 25.00, 45.00, NULL, 20.00, 'pending', '2022-01-13 05:51:46', '2022-01-13 05:51:46');
 
 -- --------------------------------------------------------
 
@@ -302,7 +312,9 @@ INSERT INTO `order_items` (`id`, `order_id`, `shop_id`, `product_id`, `quantity`
 (131, 71, 2, 10, 1, 250.00, 250.00, 'pending', '2022-01-11 02:18:58', '2022-01-11 02:18:58'),
 (132, 72, 2, 14, 1, 25.00, 25.00, 'pending', '2022-01-11 05:23:01', '2022-01-11 05:23:01'),
 (133, 73, 2, 14, 1, 25.00, 25.00, 'pending', '2022-01-11 05:26:45', '2022-01-11 05:26:45'),
-(134, 74, 2, 14, 1, 25.00, 25.00, 'pending', '2022-01-11 05:30:59', '2022-01-11 05:30:59');
+(134, 74, 2, 14, 1, 25.00, 25.00, 'pending', '2022-01-11 05:30:59', '2022-01-11 05:30:59'),
+(135, 75, 2, 14, 1, 25.00, 25.00, 'pending', '2022-01-13 03:50:15', '2022-01-13 03:50:15'),
+(136, 76, 2, 14, 1, 25.00, 25.00, 'pending', '2022-01-13 05:51:46', '2022-01-13 05:51:46');
 
 -- --------------------------------------------------------
 
@@ -577,8 +589,10 @@ CREATE TABLE `users` (
   `password` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `phone` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '1',
+  `status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `code` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `billing_address` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `billing_phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -588,10 +602,8 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `verified_at`, `password`, `phone`, `image`, `status`, `code`, `remember_token`, `created_at`, `updated_at`) VALUES
-(6, NULL, NULL, NULL, NULL, '01731107731', NULL, '1', '859154', NULL, '2022-01-06 06:46:12', '2022-01-11 05:22:40'),
-(7, NULL, NULL, NULL, NULL, '01731107732', NULL, '1', '421523', NULL, '2022-01-06 07:12:49', '2022-01-06 07:12:49'),
-(8, NULL, NULL, NULL, NULL, '01731107733', NULL, '1', '900749', NULL, '2022-01-06 07:15:14', '2022-01-06 07:15:14');
+INSERT INTO `users` (`id`, `name`, `email`, `verified_at`, `password`, `phone`, `image`, `status`, `code`, `billing_address`, `billing_phone`, `remember_token`, `created_at`, `updated_at`) VALUES
+(1, NULL, NULL, NULL, NULL, '01731107731', NULL, NULL, '672522', 'SHitakundo', '01623036654', NULL, '2022-01-13 05:48:18', '2022-01-13 05:51:46');
 
 --
 -- Indexes for dumped tables
@@ -748,7 +760,7 @@ ALTER TABLE `areas`
 -- AUTO_INCREMENT for table `carts`
 --
 ALTER TABLE `carts`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -766,7 +778,7 @@ ALTER TABLE `coupons`
 -- AUTO_INCREMENT for table `delivery_men`
 --
 ALTER TABLE `delivery_men`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -778,19 +790,19 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=77;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=135;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=137;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -850,7 +862,7 @@ ALTER TABLE `subcategories`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
