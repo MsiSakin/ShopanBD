@@ -93,6 +93,10 @@ Route::get('/shop-wise-products/{shop_id}',[ApiController::class,'ShopWiseProduc
 Route::post('/search-products',[ApiController::class,'SearchProduct']);
 Route::match(['get','post'],'/cart/{product_id}',[ApiController::class,'Cart']);
 Route::post('/cart-detail',[ApiController::class,'CartDetails']);
+Route::post('/update-quantity-minus/{cart_id}',[ApiController::class,"QuantityUpdateMinus"]);
+Route::post('/update-quantity-plus/{cart_id}',[ApiController::class,"QuantityUpdatePlus"]);
+Route::post('/apply-coupon',[ApiController::class,'CouponApply']);
+
 
 //Vendor Api Route
 Route::post('/add-product',[ApiController::class,'AddProduct']);

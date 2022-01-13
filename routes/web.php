@@ -30,7 +30,7 @@ Route::post('/user-login',[HomeController::class,'UserLogin']);
 Route::post('/user-code',[HomeController::class,'UserCode']);
 Route::get('/checkout-form',[HomeController::class,'CheckOutForm']);
 Route::get('/delivery-charge-cal',[HomeController::class,'DeliveryChargeCal']);
-Route::post('/order-place',[HomeController::class,'OrderPlace']);
+Route::post('/order-place/{id}',[HomeController::class,'OrderPlace']);
 
 //admin panel
 Route::get('/home', function () {

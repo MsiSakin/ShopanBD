@@ -95,7 +95,7 @@ class HomeController extends Controller
             }else{
                 $product = Product::findOrFail($id);
                 $cart_add = new Cart;
-                $cart_add->customer_id = 0;
+                // $cart_add->customer_id = 0;
                 $cart_add->session_id = $session_id;
                 $cart_add->product_id = $id;
                 $cart_add->shop_id = $product['shop_id'];
@@ -176,11 +176,27 @@ class HomeController extends Controller
     //Checkout login check
     public function Checkout(){
 
-        if(Auth::check()){
+        // if(Auth::check()){
             // return redirect('/checkout-form');
+        // }
+        $session_id = Session::get('session_id');
+        if($session_id){
+            $cart = Cart::where('session_id',$session_id)->first();
+            if($cart){
+                $id = $cart['customer_id'];
+                if(!empty($id)){
+                    return redirect('/checkout-form');
+                }else{
+                    return redirect('/login');
+                }
+            }else{
+                return back()->with('error',"Session Expired");
+            }
         }else{
-            return redirect('/login');
+            return back()->with('error',"Session Expired");
         }
+
+
     }
 
     //UserLogin
@@ -188,6 +204,9 @@ class HomeController extends Controller
         $request->validate([
             'phone' => 'required|min:11',
         ]);
+
+
+
 
         //phone exits or not
         $phone_exit_or_not = User::where('phone',$request['phone'])->count();
@@ -220,6 +239,16 @@ class HomeController extends Controller
             curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $smsresult = curl_exec($ch);
+
+            $session_id = Session::get('session_id');
+            if($session_id){
+                $cart = Cart::where('session_id',$session_id)->first();
+                if($cart){
+                    $cart['customer_id'] = $customer['id'];
+                    $cart->save();
+                }
+            }
+
 
             if(isset($smsresult)){
                 return view('auth.code');
@@ -255,6 +284,16 @@ class HomeController extends Controller
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $smsresult = curl_exec($ch);
 
+            $session_id = Session::get('session_id');
+            if($session_id){
+                $cart = Cart::where('session_id',$session_id)->first();
+                if($cart){
+                    $cart['customer_id'] = $customer['id'];
+                    $cart->save();
+                }
+            }
+
+
             if(isset($smsresult)){
                 return view('auth.code');
             }else{
@@ -279,7 +318,14 @@ class HomeController extends Controller
 
     //CheckOutForm
     public function CheckOutForm(){
-        return view('Frontend.cart.checkout_form');
+        $session_id = Session::get('session_id');
+        if($session_id){
+            $cart = Cart::where('session_id',$session_id)->first();
+            $id = $cart['customer_id'];
+            $customer = User::where('id',$id)->first();
+        }
+
+        return view('Frontend.cart.checkout_form',compact('customer'));
     }
 
     //DeliveryChargeCal
@@ -315,7 +361,7 @@ class HomeController extends Controller
     public function NotifyDeliveryMan(){
 
 
-        sleep(10);
+        sleep(3);
             //push notification
         $Shop_carts = Cart::where('session_id',Session::get('session_id'))->select('shop_id')->distinct()->get()->toArray();
 
@@ -358,25 +404,25 @@ class HomeController extends Controller
 
 
     //OrderPlace
-    public function OrderPlace(Request $request){
+    public function OrderPlace(Request $request,$id){
         // return $request->all();
         //validateion
         $request->validate([
-            'phone' => 'required|min:11',
-            'address' => 'required|min:2',
+            'billing_phone' => 'required|min:11',
+            'billing_address' => 'required|min:2',
         ]);
 
 
         //order
         $order = new Order;
-        $order->customer_id = 0;
+        $order->customer_id = $id;
         $order->session_id = Session::get('session_id');
         $order->date = Carbon::now();
         $order->total = $request['total'];
         $order->grand_total = $request['grand_toal'];
         $order->delivery_charge = $request['delivery_charge'];
-        $order->phone = $request['phone'];
-        $order->address = $request['address'];
+        $order->phone = $request['billing_phone'];
+        $order->address = $request['billing_address'];
         $order->area_id = $request['area'];
         $order->sub_area_id = $request['sub_area_id'];
         $order->payment_type = $request['paymentMethod'];
@@ -394,6 +440,11 @@ class HomeController extends Controller
             $order_items->sub_total = $cart['sub_total'];
             $order_items->save();
         }
+
+        $customer = User::where('id',$id)->first();
+        $customer['billing_address'] = $request['billing_address'];
+        $customer['billing_phone'] = $request['billing_phone'];
+        $customer->save();
 
 
 
