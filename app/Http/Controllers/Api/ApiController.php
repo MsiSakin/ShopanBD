@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
+use App\Models\Area;
 use App\Models\Cart;
 use App\Models\Category;
 use App\Models\Coupon;
 use App\Models\DeliveryMan;
 use App\Models\Product;
+use App\Models\SetLocation;
 use App\Models\Shop;
 use App\Models\ShopImage;
 use App\Models\Shopkeeper;
@@ -566,7 +568,7 @@ class ApiController extends Controller
      public function productInfo($id){
 
         $product = Product::with('shop','category','subcategory')->where('id',$id)->select('id','sub_category_id','category_id','shop_id','product_name','price','image','discount','discounted_price','short_des','long_des','status')->first();
-        return $product;
+
      if (!empty($product)){
             return response()->json([
                 'data'=>$product,
@@ -1086,8 +1088,6 @@ class ApiController extends Controller
 
         }else{
             $cart_details = Cart::with('product','shop')->where('session_id',$request['user_session'])->get();
-
-
             $total = $cart_details->sum('sub_total');
             // return $cart_details;
             if($cart_details){
@@ -1156,22 +1156,34 @@ class ApiController extends Controller
 
      //CouponApply
      public function CouponApply(Request $request){
+        //  return $request->all();
         $coupon = $request['coupon_name'];
 
         $coupon_data = Coupon::where('coupon_name',$coupon)->count();
         if($coupon_data > 0){
             $coupon_details = Coupon::where('coupon_name',$coupon)->first();
             $validity_check = Carbon::now();
-            if($coupon_details['validity'] < $validity_check){
-                return redirect()->back()->with('error',"Coupon Already Expired");
-            }else{
-                Session::put('coupon_session',[
-                    'coupon_name'=>$coupon_details['coupon_name'],
-                    'coupon_discount'=>$coupon_details['discount']
-                ]);
 
+
+            $cart_details = Cart::where('session_id',$request['user_session_id'])->get();
+            $total = $cart_details->sum('sub_total');
+
+            // $discount = $total *  $cart_details['discount'] / 100;
+            // $updated_price = $cart_sub_total - $discount;
+             $discount = $total *  $coupon_details['discount'] / 100;
+             $discounted_price = $total - $discount;
+
+            if($coupon_details['validity'] < $validity_check){
+                return response()->json([
+                    'status'=>false,
+                    'message'=>'Coupon Already Expired!'
+                ],200);
+            }else{
                 return response()->json([
                     'status'=>true,
+                    'discount' => $discount,
+                    'discounted_price' => $discounted_price,
+                    'total' => $discounted_price,
                     'message' => 'Coupon Applied'
                 ],200);
             }
@@ -1183,4 +1195,89 @@ class ApiController extends Controller
             ],200);
         }
     }
+
+    //Area
+    public function Area(){
+        $area = Area::select('id','area_name')->get()->toArray();
+        if($area){
+            return response()->json([
+                'status'=>true,
+                'data'=>$area
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'area' => "Area Not Found"
+            ],200);
+        }
+    }
+
+
+    //SubArea
+    public function SubArea($area_id){
+        $subarealist = SetLocation::where('area_id',$area_id)->select('id','area_id','sub_area_name','delivery_charge')->get()->toArray();
+        if($subarealist){
+            return response()->json([
+                'status'=>true,
+                'data'=>$subarealist
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'area' => "Sub Area Not Found"
+            ],200);
+        }
+    }
+
+
+    //CheckoutForm
+    public function CheckoutForm(Request $request){
+        return $request->all();
+    }
+
+
+    //DeliveryChargeCal
+    public function DeliveryChargeCal(Request $request){
+
+        $sub_area_id = $request['sub_area_id'];
+
+        $sub_area_charge = SetLocation::where('id',$sub_area_id)->select('delivery_charge')->first();
+        $charge = $sub_area_charge['delivery_charge'];
+
+        $carts = Cart::where('session_id',$request['user_session_id'])->select('shop_id')->distinct()->get()->count();
+
+        $val = ( $carts - 1 ) * 5;
+        $delivery_charge =  (int)$charge + $val;
+
+        $grand_total = $request['total'] + $delivery_charge;
+        return response()->json([
+            'status' => true,
+            'grand_toal'=>$grand_total,
+            'delivery_charge'=>$delivery_charge,
+            'message' => "Grand Total With Delivery Charge"
+        ],200);
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

@@ -26,7 +26,7 @@ class AuthController extends Controller
 
         }else{
 
-            $shopkeeper = Shopkeeper::where('phone',$request->phone)->first();
+            $shopkeeper = Shopkeeper::with('shops')->where('phone',$request->phone)->first();
             if($shopkeeper->status == 0){
                 return response()->json([
                     'message'=> 'You are currently invalid! Please contact with admin',

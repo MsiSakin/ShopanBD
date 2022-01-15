@@ -334,7 +334,7 @@ class HomeController extends Controller
         $Id = $request['Id'];
         $sub_area_charge = SetLocation::where('id',$Id)->select('delivery_charge')->first();
         $charge = $sub_area_charge['delivery_charge'];
-        $carts = Cart::select('shop_id')->distinct()->get()->count();
+        $carts = Cart::where('session_id',Session::get('session_id'))->select('shop_id')->distinct()->get()->count();
         $val = ( $carts - 1 ) * 5;
         $delivery_charge =  (int)$charge + $val;
 

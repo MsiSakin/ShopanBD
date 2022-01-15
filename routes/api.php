@@ -94,6 +94,21 @@ Route::post('/cart-detail',[ApiController::class,'CartDetails']);
 Route::post('/update-quantity-minus/{cart_id}',[ApiController::class,"QuantityUpdateMinus"]);
 Route::post('/update-quantity-plus/{cart_id}',[ApiController::class,"QuantityUpdatePlus"]);
 Route::post('/apply-coupon',[ApiController::class,'CouponApply']);
+Route::post('/checkout-form',[ApiController::class,'CheckoutForm']);
+Route::get('/area',[ApiController::class,'Area']);
+Route::get('/sub-area/{area_id}',[ApiController::class,'SubArea']);
+Route::post('/delivery-charge-calculate',[ApiController::class,'DeliveryChargeCal']);
+
+
+
+
+
+
+
+
+
+
+
 
 
 //Vendor Api Route
