@@ -19,14 +19,13 @@ class AuthController extends Controller
 {
     public function login(Request $request){
         if(!Auth::guard('shopkeeper')->attempt($request->only('phone','password'),$request->filled('remember'))){
-
-
-                return response()->json([
-                    'status'=>false,
-                    'message'=>'Invalid Shopkeeper'
-                ],200);
+            return response()->json([
+                'status'=>false,
+                'message'=>'Invalid Shopkeeper'
+            ],200);
 
         }else{
+
             $shopkeeper = Shopkeeper::where('phone',$request->phone)->first();
             if($shopkeeper->status == 0){
                 return response()->json([
@@ -222,6 +221,5 @@ class AuthController extends Controller
             }
 
         }
-
-
 }
+

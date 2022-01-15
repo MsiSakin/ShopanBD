@@ -25,9 +25,14 @@ class Product extends Model
         return $this->belongsTo(Shop::class,'shop_id');
     }
 
-
+    //category
     public function category(){
         return $this->belongsTo(Category::class,'category_id');
+    }
+
+    //subcategory
+    public function subcategory(){
+        return $this->belongsTo(Subcategory::class,'sub_category_id')->select('id','category_id','sub_category_name','sub_category_image');
     }
 
 }

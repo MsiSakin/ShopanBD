@@ -20,7 +20,12 @@ class Category extends Model
         return asset($this->category_image);
     }
 
-    // public function category(){
-    //     return $this->hasMany(Shop::class,'category_id');
+    // public function subcategory(){
+    //     return $this->hasMany(Subcategory::class,'category_id');
+    // }
+
+    //subcategory
+    // public function subcategory(){
+    //     return $this->belongsTo(Subcategory::class,'id');
     // }
 }

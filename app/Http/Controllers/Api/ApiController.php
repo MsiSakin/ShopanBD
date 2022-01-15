@@ -255,30 +255,25 @@ class ApiController extends Controller
 
     //All Shop
     public function allShop(){
-    $shops = Shop::where('shop_status',1)->with('category')->select('id','shopkeeper_id','category_id','shop_name','shop_address','shop_description','banner','shop_phone','shop_status')->paginate(15);
-    if(!@empty($shops)){
-        return response()->json([
-            'status'=> true,
-            'shop' => $shops,
-        ],200);
-    }else{
-        return response()->json([
-            'status'=> false,
-            'message' => 'No Shop Found!',
-        ],200);
+         $shops = Shop::where('shop_status',1)->with('category')->select('id','shopkeeper_id','category_id','shop_name','shop_address','shop_description','banner','shop_phone','shop_status')->paginate(15);
+        if(!@empty($shops)){
+            return response()->json([
+                'status'=> true,
+                'shop' => $shops,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=> false,
+                'message' => 'No Shop Found!',
+            ],200);
+        }
     }
-}
 
 
 
      //shop info
      public function shopInfo($id){
-
-
         $shop = Shop::with('category')->where('id',$id)->select('id','category_id','shop_name','shop_address','shop_description','banner','shop_phone','shop_status')->first();
-
-
-
         if (!empty($shop)){
             return response()->json([
                 'data'=>$shop,
@@ -298,7 +293,6 @@ class ApiController extends Controller
     public function shopCoverImage($id){
 
         $shopCover = ShopImage::select('id','shop_slider')->where('shop_id',$id)->get();
-
         if (!empty($shopCover)){
             return response()->json([
                 'data'=>$shopCover,
@@ -353,8 +347,6 @@ class ApiController extends Controller
                 ], 200);
 
             }
-
-
     }
 
 
@@ -381,9 +373,6 @@ class ApiController extends Controller
             $ShopPhoneLength = Validator::make($request->all(),[
             'shop_phone' => 'min:11|max:11',
             ]);
-
-
-
             if(!empty($request['shop_phone'])){
                 if($ShopPhoneLength->fails()){
                     return response()->json([
@@ -434,8 +423,6 @@ class ApiController extends Controller
             }
 
     }
-
-
         //Specific Shop Status
         public function shopStatus($id){
 
@@ -455,8 +442,6 @@ class ApiController extends Controller
                 ],200);
             }
         }
-
-
 
          //Specific Shop Status Update
          public function shopStatusUpdate(Request $request,$id){
@@ -479,7 +464,6 @@ class ApiController extends Controller
                 ],200);
             }
         }
-
 
     //AddProduct
     public function AddProduct(Request $request){
@@ -578,13 +562,11 @@ class ApiController extends Controller
 
         }
     }
-
-
      //Specific Product information
      public function productInfo($id){
 
-        $product = Product::with('shop','category')->where('id',$id)->select('id','sub_category_id','category_id','shop_id','product_name','price','image','discount','discounted_price','short_des','long_des','status')->first();
-
+        $product = Product::with('shop','category','subcategory')->where('id',$id)->select('id','sub_category_id','category_id','shop_id','product_name','price','image','discount','discounted_price','short_des','long_des','status')->first();
+        return $product;
      if (!empty($product)){
             return response()->json([
                 'data'=>$product,
@@ -598,7 +580,6 @@ class ApiController extends Controller
             ],200);
         }
     }
-
     //SubcategoryWiseProduct
     public function SubcategoryWiseProduct($sub_category_id){
         $subcategory_wise_product = Product::with('shop')->where('sub_category_id',$sub_category_id)->where('status',1)->select('id','category_id','sub_category_id','shop_id','product_name','image','price','discount','discounted_price','short_des','long_des')->paginate(15);
@@ -614,7 +595,6 @@ class ApiController extends Controller
             ],200);
         }
     }
-
     //ProductDetails
     public function ProductDetails(){
         $product_details = Product::with('shop')->latest()->select('id','category_id','sub_category_id','shop_id','product_name','image','price','discount','discounted_price','short_des','long_des')->where('status',1)->paginate(15);
@@ -1107,6 +1087,7 @@ class ApiController extends Controller
         }else{
             $cart_details = Cart::with('product','shop')->where('session_id',$request['user_session'])->get();
 
+
             $total = $cart_details->sum('sub_total');
             // return $cart_details;
             if($cart_details){
@@ -1150,8 +1131,6 @@ class ApiController extends Controller
                 'message'=>'Failed to update quantity!'
             ],200);
         }
-
-
 
     }
 
@@ -1204,14 +1183,4 @@ class ApiController extends Controller
             ],200);
         }
     }
-
-
-
-
-
-
-
-
-
-
 }
