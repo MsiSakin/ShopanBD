@@ -361,7 +361,7 @@ class HomeController extends Controller
     public function NotifyDeliveryMan(){
 
 
-        sleep(3);
+        // sleep(3);
             //push notification
         $Shop_carts = Cart::where('session_id',Session::get('session_id'))->select('shop_id')->distinct()->get()->toArray();
 
@@ -455,10 +455,11 @@ class HomeController extends Controller
         $serverkey = 'AAAAAjKhGfQ:APA91bFiHMApm1ff6pUK3Iq1UhYAoMchL51QX8DEidR9IC_SbXxOlZXqmiyr-ishHIGq9bSQFAZLriCMpn_9dqwNb9pRWLIbjt1Pe8m4QPUOvDe5N6JOLymUjO9nkIqsMBB3VYZTPy_2';
          $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
          foreach($Shop_carts as $cart){
-        //  $token = 'cKMWd_i-424LH6uYler2Y6:APA91bHs0hhQCK763-Rh7DMpWLBGDtsNqPazI2W0gpyTIMKkalf7FvSNX7SehBTQmfcj6kXZ6luH0dmji4aI8-6EMAW6Wmt5EI7KOih6fS_OmBarZSCTOoqq-sZt6ri9oDnK88YC-sgl';
+        //   $token = 'eCpcf_qR4ZgAzD8RHwll0N:APA91bEr-o4ob5Rfnn1d0V99Du-znAq_BCAgyx0NJYvv9thYVtPnLfGrYJYMQ5A4cfuGn05FjiWcZT5WRbKfEjeSrwa7NEkpDmAdgmwbz80MQjo1FuMru_u9w958bmWkAx7XwKjbL_SV';
             $dev_token = ShopDeviceToken::where('shop_id',$cart['shop_id'])->first();
 
             $token = $dev_token['device_token'];
+
             // return $token;die;
             $notification = [
                     'title' => "You Have An Order",
@@ -490,7 +491,7 @@ class HomeController extends Controller
                 $result = curl_exec($ch);
                 curl_close($ch);
 
-                $deliver = $this->NotifyDeliveryMan();
+                // $deliver = $this->NotifyDeliveryMan();
             }
                 // echo $result;
                 return redirect()->back()->with("message","Order Placed Successfully");

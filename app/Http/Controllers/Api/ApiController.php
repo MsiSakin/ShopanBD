@@ -9,9 +9,12 @@ use App\Models\Cart;
 use App\Models\Category;
 use App\Models\Coupon;
 use App\Models\DeliveryMan;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\SetLocation;
 use App\Models\Shop;
+use App\Models\ShopDeviceToken;
 use App\Models\ShopImage;
 use App\Models\Shopkeeper;
 use App\Models\Slider;
@@ -23,6 +26,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
+use Intervention\Image\Facades\Image;
 
 class ApiController extends Controller
 {
@@ -324,14 +328,15 @@ class ApiController extends Controller
         $images = $request->file('shop_slider');
 
         foreach ($images as $img) {
+            $img = Image::make($img);
             $imageName = uniqid().'.'.$img->extension();
-            $directory = 'shopkeeper/images/shop/slider/';
-            $img->move($directory, $imageName);
-            $uplodPath = $directory.$imageName;
-
+            $directory = 'shopkeeper/images/shop/slider/'.$imageName;
+            // $img->move($directory, $imageName);
+            // $uplodPath = $directory.$imageName;
+            Image::make($img)->resize(225,225)->save($directory);
             $save = new ShopImage();
             $save->shop_id = $id;
-            $save->shop_slider = $uplodPath;
+            $save->shop_slider = $directory;
             $save->save();
         }
         if($save){
@@ -390,12 +395,13 @@ class ApiController extends Controller
             if(isset($request['banner'])){
                      unlink($shop->banner);
                      $banner = $request->file('banner');
+                     $img = Image::make($banner);
                      $bannerName = uniqid().'.'.$banner->extension();
-                     $directory2 = 'shopkeeper/images/shop/';
-                     $banner->move($directory2, $bannerName);
-                     $bannerUrl = $directory2.$bannerName;
-
-                     $shop->banner = $bannerUrl;
+                     $directory2 = 'shopkeeper/images/shop/'.$bannerName;
+                    //  $banner->move($directory2, $bannerName);
+                    //  $bannerUrl = $directory2.$bannerName;
+                    Image::make($img)->resize(225,225)->save($directory2);
+                    $shop->banner = $directory2;
             }
 
             if(!empty($request['shop_description'])){
@@ -513,12 +519,17 @@ class ApiController extends Controller
              //image insert
         if(!empty($request['product_image'])){
             $image = $request->file('product_image');
+            $img = Image::make($image);
             $imageName = uniqid().'.'.$image->extension();
-            $directory = 'category/images/product_image/';
-            $image->move($directory, $imageName);
-            $imageUrl = $directory.$imageName;
+            $category_image = "category/images/product_image/".$imageName;
+            // $directory = 'category/images/product_image/';
+            // $image->move($directory, $imageName);
+            Image::make($img)->resize(225,225)->save($category_image);
+
+            // $imageUrl = $directory.$imageName;
+
             }else{
-                $imageUrl="";
+                $category_image="";
             }
 
             // return $request->all();
@@ -527,8 +538,8 @@ class ApiController extends Controller
             $product->sub_category_id = $request['sub_category_id'];
             $product->shop_id = $request['shop_id'];
             $product->product_name = $request['product_name'];
-            if(isset($imageUrl)){
-                $product->image = $imageUrl;
+            if(isset($category_image)){
+                $product->image = $category_image;
             }
             $product->short_des = $request['short_des'];
             $product->long_des = $request['long_des'];
@@ -735,11 +746,13 @@ class ApiController extends Controller
     if(isset($request['product_image'])){
         unlink($product->image);
         $image = $request->file('product_image');
+        $img = Image::make($image);
         $imageName = uniqid().'.'.$image->extension();
-        $directory = 'category/images/product_image/';
-        $image->move($directory, $imageName);
-        $imageUrl = $directory.$imageName;
-        $product->image = $imageUrl;
+        $directory = 'category/images/product_image/'.$imageName;
+        // $image->move($directory, $imageName);
+        // $imageUrl = $directory.$imageName;
+        Image::make($img)->resize(225,225)->save($directory);
+        $product->image = $directory;
     }
 
     if(!empty($request['short_des'])){
@@ -851,12 +864,13 @@ class ApiController extends Controller
 
                 unlink( $deliveryMan->image);
                 $image = $request->file('image');
+                $img = Image::make($image);
                 $imageName = uniqid().'.'.$image->extension();
-                $directory = 'delivery/images/deliveryman/';
-                $image->move($directory, $imageName);
-                $imageUrl = $directory.$imageName;
-
-                $deliveryMan->image = $imageUrl;
+                $directory = 'delivery/images/deliveryman/'.$imageName;
+                // $image->move($directory, $imageName);
+                // $imageUrl = $directory.$imageName;
+                Image::make($img)->resize(225,225)->save($directory);
+                $deliveryMan->image = $directory;
 
                 $deliveryMan->save();
                 if($deliveryMan){
@@ -940,12 +954,13 @@ class ApiController extends Controller
                         unlink($deliveryMan->document_image);
                     }
                     $docImage = $request->file('document_image');
+                     $img = Image::make($docImage);
                      $docImageName = uniqid().'.'.$docImage->extension();
-                     $directory = 'delivery/images/documents/';
-                     $docImage->move($directory, $docImageName);
-                     $docImageUrl = $directory.$docImageName;
-
-                     $deliveryMan->document_image = $docImageUrl;
+                     $directory = 'delivery/images/documents/'.$docImageName;
+                    //  $docImage->move($directory, $docImageName);
+                    //  $docImageUrl = $directory.$docImageName;
+                    Image::make($img)->resize(225,225)->save($directory);
+                     $deliveryMan->document_image = $directory;
                 }
 
                 if($request['document_no']){
@@ -1232,7 +1247,134 @@ class ApiController extends Controller
 
     //CheckoutForm
     public function CheckoutForm(Request $request){
-        return $request->all();
+        // return $request->all();
+        if(empty($request['billing_phone'])){
+            $error_message = "Enter Your Phone Number!";
+        }
+        //check phone length or not
+        // if(!isset($request['billing_phone']) < 11 ){
+        //     $error_message = "Phone Number Length 11 Digit!";
+        // }
+        if(empty($request['billing_address'])){
+            $error_message = "Enter Your Address!";
+        }
+        if(empty($request['billing_area_id'])){
+            $error_message = "Select Your Area!";
+        }
+        if(empty($request['billing_sub_area_id'])){
+            $error_message = "Select Your SUb Area!";
+        }
+        if(empty($request['payment_type'])){
+            $error_message = "Please Check Your Payment Type!";
+        }
+        if(empty($request['total'])){
+            $error_message = "Total Amount Can Not Be Empty!";
+        }
+        if(empty($request['delivery_charge'])){
+            $error_message = "Delivery Charge Can Not Be Empty!";
+        }
+        if(empty($request['grand_total'])){
+            $error_message = "Grand Total Can Not Be Empty!";
+        }
+        if(empty($request['user_session'])){
+            $error_message = "Usre Session Can Not Be Empty!";
+        }
+
+        if (isset($error_message) && !empty($error_message)){
+            return response()->json([
+                "status"=>false,
+                "message"=>$error_message,
+            ],200);
+        }
+
+
+        //order
+        $order = new Order;
+        if(isset($request['customer_id'])){
+            $order->customer_id = $request['customer_id'];
+        }
+        $order->session_id = $request['user_session'];
+        $order->date = Carbon::now();
+        $order->total = $request['total'];
+        $order->grand_total = $request['grand_total'];
+        $order->delivery_charge = $request['delivery_charge'];
+        $order->phone = $request['billing_phone'];
+        $order->address = $request['billing_address'];
+        $order->area_id = $request['billing_area_id'];
+        $order->sub_area_id = $request['billing_sub_area_id'];
+        $order->payment_type = $request['payment_type'];
+        $order->save();
+
+        //order items
+        $carts = Cart::with('product')->where('session_id',$request['user_session'])->get()->toArray();
+        // return $carts; die;
+        foreach($carts as $cart){
+            $order_items = new OrderItem;
+            $order_items->order_id = $order->id;
+            $order_items->shop_id = $cart['shop_id'];
+            $order_items->product_id = $cart['product']['id'];
+            $order_items->quantity = $cart['quantity'];
+            $order_items->unit_cost = $cart['product']['price'];
+            $order_items->sub_total = $cart['sub_total'];
+            $order_items->save();
+        }
+
+        //users update save
+        $customer = User::where('id',$request['customer_id'])->first();
+        $customer->billing_address = $request['billing_address'];
+        $customer->billing_phone = $request['billing_phone'];
+        $customer->save();
+
+
+        //push notification
+        $Shop_carts = Cart::where('session_id',$request['user_session'])->select('shop_id')->distinct()->get()->toArray();
+
+        $serverkey = 'AAAAAjKhGfQ:APA91bFiHMApm1ff6pUK3Iq1UhYAoMchL51QX8DEidR9IC_SbXxOlZXqmiyr-ishHIGq9bSQFAZLriCMpn_9dqwNb9pRWLIbjt1Pe8m4QPUOvDe5N6JOLymUjO9nkIqsMBB3VYZTPy_2';
+         $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
+         foreach($Shop_carts as $cart){
+        //  $token = 'cKMWd_i-424LH6uYler2Y6:APA91bHs0hhQCK763-Rh7DMpWLBGDtsNqPazI2W0gpyTIMKkalf7FvSNX7SehBTQmfcj6kXZ6luH0dmji4aI8-6EMAW6Wmt5EI7KOih6fS_OmBarZSCTOoqq-sZt6ri9oDnK88YC-sgl';
+            $dev_token = ShopDeviceToken::where('shop_id',$cart['shop_id'])->first();
+            $token = $dev_token['device_token'];
+
+            $notification = [
+                    'title' => "You Have An Order",
+                    'body' => "Please Check Your Order List \n You Have A New Order",
+
+                ];
+
+                $fcmNotification = [
+                    //'registration_ids' => $tokenList, //multple token array
+                    'to'        => $token, //single token
+                    'notification' => $notification,
+                ];
+
+
+
+                $headers = [
+                    'Authorization: key=' . $serverkey,
+                    'Content-Type: application/json',
+
+                ];
+
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL,$fcmUrl);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fcmNotification));
+                $result = curl_exec($ch);
+                curl_close($ch);
+
+                // $deliver = $this->NotifyDeliveryMan();
+            }
+
+
+            return response()->json([
+                'status'=>true,
+                'message'=>"Your Order Place Successfully"
+            ],200);
+
     }
 
 
@@ -1259,7 +1401,26 @@ class ApiController extends Controller
 
     }
 
+    //OrderDetails
+    public function OrderDetails(Request $request){
+        // return $request->all();
+        $order_get = Order::where('session_id',$request['user_session'])->select('id','customer_id','session_id','date','phone','address','area_id','sub_area_id','payment_type','total','grand_total','delivery_man_id','delivery_charge','status')->first();
+        $order_item = OrderItem::with('product','shop')->where('order_id',$order_get['id'])->select('id','order_id','shop_id','product_id','quantity','unit_cost','sub_total','remark')->get()->toArray();
 
+        if($order_get){
+            return response()->json([
+                'status'=>true,
+                'order'=>$order_get,
+                'order_items'=>$order_item
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'area' => "Order Not Found"
+            ],200);
+        }
+
+    }
 
 
 

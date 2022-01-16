@@ -46,7 +46,7 @@
                 </li>
 
                 <li class="list-group-item d-flex justify-content-between">
-                  <span>Total </span>
+                  <span>Grand Total </span>
                   @if(Session::get('coupon_session'))
                     <strong id="grand_total">৳{{ $updated_price }}</strong>
                   @else
